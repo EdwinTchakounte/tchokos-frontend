@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Category, SiteConfig } from "@/lib/types";
 
@@ -12,15 +13,14 @@ export function Footer({ config, categories }: Props) {
     <footer className="mt-16 bg-ink text-slate-300">
       <div className="container-tchokos grid gap-10 py-12 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="grid place-items-center h-9 w-9 rounded-xl bg-brand-600 text-white font-display font-extrabold">
-              T
-            </span>
-            <span className="font-display text-xl font-extrabold text-white">
-              {config?.site_name ?? "Tchokos"}
-            </span>
-          </div>
-          <p className="mt-3 text-sm text-slate-400 max-w-xs">
+          <Image
+            src="/logo-tchokos-white.png"
+            alt="Tchokos"
+            width={621}
+            height={236}
+            className="h-11 w-auto"
+          />
+          <p className="mt-4 text-sm text-slate-400 max-w-xs">
             {config?.tagline ??
               "Chaussures & vêtements — la marque du Cameroun."}
           </p>
@@ -46,6 +46,7 @@ export function Footer({ config, categories }: Props) {
             <li><Link href="/a-propos" className="hover:text-brand-400">À propos</Link></li>
             <li><Link href="/boutique" className="hover:text-brand-400">Tous les produits</Link></li>
             <li><Link href="/contact" className="hover:text-brand-400">Contact</Link></li>
+            <li><Link href="/vendeur" className="hover:text-brand-400">Espace vendeur</Link></li>
             <li><Link href="/livreur" className="hover:text-brand-400">Espace livreur</Link></li>
           </ul>
         </div>

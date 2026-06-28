@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
@@ -37,13 +38,15 @@ export function Header({ config, categories }: Props) {
 
       <div className="container-tchokos flex items-center gap-4 h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="grid place-items-center h-9 w-9 rounded-xl bg-brand-600 text-white font-display font-extrabold">
-            T
-          </span>
-          <span className="font-display text-xl font-extrabold tracking-tight">
-            {config?.site_name ?? "Tchokos"}
-          </span>
+        <Link href="/" className="flex items-center shrink-0" aria-label="Tchokos — accueil">
+          <Image
+            src="/logo-tchokos.png"
+            alt="Tchokos"
+            width={621}
+            height={236}
+            priority
+            className="h-9 w-auto sm:h-10"
+          />
         </Link>
 
         {/* Nav desktop */}
