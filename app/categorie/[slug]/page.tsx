@@ -47,7 +47,7 @@ export default async function CategoryPage({ params }: Props) {
             <a href="/boutique" className="hover:text-white">Boutique</a> /{" "}
             <span className="text-white/90">{category.name}</span>
           </nav>
-          <h1 className="font-display text-4xl font-extrabold text-white sm:text-5xl">
+          <h1 className="font-display text-2xl font-extrabold text-white sm:text-4xl lg:text-5xl">
             {category.name}
           </h1>
           {category.description && (

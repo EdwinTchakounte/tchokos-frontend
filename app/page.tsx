@@ -77,7 +77,7 @@ export default async function HomePage() {
             <span className="relative inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
               Réseau de revendeurs
             </span>
-            <h2 className="relative mt-4 font-display text-3xl font-extrabold sm:text-4xl">
+            <h2 className="relative mt-4 font-display text-2xl font-extrabold sm:text-3xl lg:text-4xl">
               Revendeur ? Achetez au prix grossiste.
             </h2>
             <p className="relative mt-3 max-w-md text-white/90">

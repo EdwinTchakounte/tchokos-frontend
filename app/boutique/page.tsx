@@ -49,7 +49,7 @@ export default async function BoutiquePage({ searchParams }: Props) {
   return (
     <div className="container-tchokos py-10">
       <header className="mb-6">
-        <h1 className="font-display text-3xl font-extrabold text-ink">
+        <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">
           {sp.recherche ? `Recherche : « ${sp.recherche} »` : "La boutique"}
         </h1>
         <p className="mt-1 text-slate-500">

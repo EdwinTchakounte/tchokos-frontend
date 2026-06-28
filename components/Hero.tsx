@@ -28,7 +28,7 @@ export function Hero({ config, ctaLabel }: Props) {
             🇨🇲 Akwa · Douala — « The Best, Made in Africa »
           </span>
 
-          <h1 className="mx-auto mt-6 max-w-4xl font-display text-[2rem] font-extrabold leading-[1.1] animate-fade-up sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto mt-6 max-w-4xl font-display text-[1.7rem] font-extrabold leading-[1.12] animate-fade-up sm:text-5xl lg:text-6xl">
             La mode camerounaise,
             <br />
             <span className="relative inline-block text-brand-500">

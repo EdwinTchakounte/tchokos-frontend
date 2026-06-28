@@ -56,7 +56,7 @@ export default async function ProductPage({ params }: Props) {
               {product.brand}
             </p>
           )}
-          <h1 className="mt-1 font-display text-3xl font-extrabold text-ink">
+          <h1 className="mt-1 font-display text-2xl font-extrabold text-ink sm:text-3xl">
             {product.name}
           </h1>
 
@@ -94,7 +94,7 @@ export default async function ProductPage({ params }: Props) {
           </div>
 
           <div className="mt-5 flex items-baseline gap-3">
-            <span className="font-display text-3xl font-extrabold text-ink">
+            <span className="font-display text-2xl font-extrabold text-ink sm:text-3xl">
               {formatPrice(product.price)}
             </span>
             {product.compare_at_price && (

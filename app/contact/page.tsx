@@ -16,7 +16,7 @@ export default async function ContactPage() {
 
   return (
     <div className="container-tchokos py-12">
-      <h1 className="font-display text-3xl font-extrabold text-ink">Contact</h1>
+      <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Contact</h1>
       <p className="mt-1 max-w-xl text-slate-500">
         Une question, une commande, un partenariat ? Écrivez-nous — on répond vite.
       </p>
