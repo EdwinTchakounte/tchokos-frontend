@@ -18,6 +18,14 @@ export type ProductImage = {
 export type Badge = "" | "nouveau" | "promo" | "bestseller" | "made_in_cmr";
 export type Target = "femme" | "homme" | "enfant" | "unisexe";
 
+export type Review = {
+  id: number;
+  author_name: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+};
+
 export type Product = {
   id: number;
   name: string;
@@ -29,6 +37,8 @@ export type Product = {
   badge: Badge;
   target: Target;
   in_stock: boolean;
+  rating_avg: number;
+  rating_count: number;
   category_slug: string;
   category_name: string;
   image: string | null;
@@ -41,6 +51,7 @@ export type ProductDetail = Product & {
   sizes: string;
   sizes_list: string[];
   images: ProductImage[];
+  reviews: Review[];
 };
 
 export type SiteConfig = {

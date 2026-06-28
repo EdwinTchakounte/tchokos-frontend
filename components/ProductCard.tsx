@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { AddToCartButton } from "./AddToCartButton";
+import { Stars } from "./Stars";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
@@ -64,6 +65,12 @@ export function ProductCard({ product }: { product: Product }) {
         <h3 className="mt-0.5 line-clamp-2 text-sm font-medium text-ink group-hover:text-brand-700">
           {product.name}
         </h3>
+        {product.rating_count > 0 && (
+          <div className="mt-1 flex items-center gap-1">
+            <Stars value={product.rating_avg} />
+            <span className="text-[11px] text-slate-400">({product.rating_count})</span>
+          </div>
+        )}
         <div className="mt-auto pt-2 flex items-baseline gap-2">
           <span className="font-display text-base font-bold text-ink">
             {formatPrice(product.price)}

@@ -5,7 +5,9 @@ import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductPurchase } from "@/components/ProductPurchase";
 import { ProductGrid } from "@/components/ProductGrid";
+import { ProductReviews } from "@/components/ProductReviews";
 import { SectionHeading } from "@/components/SectionHeading";
+import { Stars } from "@/components/Stars";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -58,6 +60,18 @@ export default async function ProductPage({ params }: Props) {
             {product.name}
           </h1>
 
+          {product.rating_count > 0 && (
+            <a href="#avis" className="mt-2 inline-flex items-center gap-2">
+              <Stars value={product.rating_avg} />
+              <span className="text-sm font-medium text-ink">
+                {product.rating_avg.toFixed(1)}
+              </span>
+              <span className="text-sm text-slate-400">
+                ({product.rating_count} avis)
+              </span>
+            </a>
+          )}
+
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {product.badge && (
               <span
@@ -104,7 +118,24 @@ export default async function ProductPage({ params }: Props) {
           <div className="mt-7 rounded-2xl border border-slate-100 p-5 shadow-card">
             <ProductPurchase product={product} />
           </div>
+
+          {/* Réassurance */}
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Reassure icon="🛵" title="Livraison Douala" />
+            <Reassure icon="📱" title="Mobile Money" />
+            <Reassure icon="💬" title="Support WhatsApp" />
+            <Reassure icon="✅" title="Produit vérifié" />
+          </div>
         </div>
+      </div>
+
+      {/* Avis clients */}
+      <div id="avis">
+        <ProductReviews
+          reviews={product.reviews}
+          ratingAvg={product.rating_avg}
+          ratingCount={product.rating_count}
+        />
       </div>
 
       {related.length > 0 && (
@@ -113,6 +144,15 @@ export default async function ProductPage({ params }: Props) {
           <ProductGrid products={related} />
         </section>
       )}
+    </div>
+  );
+}
+
+function Reassure({ icon, title }: { icon: string; title: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1 rounded-xl border border-slate-100 px-2 py-3 text-center">
+      <span className="text-xl">{icon}</span>
+      <span className="text-xs font-medium text-ink-soft">{title}</span>
     </div>
   );
 }
