@@ -31,17 +31,7 @@ export function Hero({ config, ctaLabel }: Props) {
           <h1 className="mx-auto mt-6 max-w-4xl font-display text-[1.7rem] font-extrabold leading-[1.12] animate-fade-up sm:text-5xl lg:text-6xl">
             La mode camerounaise,
             <br />
-            <span className="relative inline-block text-brand-500">
-              à prix grossiste
-              <svg
-                className="absolute -bottom-1.5 left-0 w-full sm:-bottom-2"
-                viewBox="0 0 300 12"
-                fill="none"
-                preserveAspectRatio="none"
-              >
-                <path d="M2 9C60 3 140 3 298 7" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-              </svg>
-            </span>
+            <span className="text-brand-500">à prix grossiste</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl text-base text-slate-200 animate-fade-up-2 sm:text-lg">
