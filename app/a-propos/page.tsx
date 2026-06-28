@@ -49,6 +49,10 @@ export default async function AboutPage() {
             Mobile Money que tout le monde maîtrise. La technologie au service des
             gens — jamais l&apos;inverse.
           </p>
+          <blockquote className="border-l-4 border-brand-500 pl-4 italic text-ink">
+            « Le feu peut détruire la hutte, mais jamais la volonté de
+            reconstruire. »
+          </blockquote>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
