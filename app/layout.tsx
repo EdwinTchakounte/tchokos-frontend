@@ -7,6 +7,7 @@ import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { MobileNav } from "@/components/MobileNav";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -54,7 +55,7 @@ export default async function RootLayout({
       lang="fr"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-ink">
+      <body className="min-h-full flex flex-col bg-white text-ink pb-14 md:pb-0">
         <CartProvider>
           <Header config={config} categories={categories} />
           <main className="flex-1">{children}</main>
@@ -62,6 +63,7 @@ export default async function RootLayout({
           {config?.whatsapp_number ? (
             <WhatsAppFloat number={config.whatsapp_number} />
           ) : null}
+          <MobileNav />
         </CartProvider>
       </body>
     </html>

@@ -13,13 +13,26 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div className="relative aspect-square bg-slate-50 overflow-hidden">
         {product.image ? (
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover group-hover:scale-105 transition duration-300"
-          />
+          <>
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className={`object-cover transition duration-500 group-hover:scale-105 ${
+                product.hover_image ? "group-hover:opacity-0" : ""
+              }`}
+            />
+            {product.hover_image && (
+              <Image
+                src={product.hover_image}
+                alt=""
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover opacity-0 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+              />
+            )}
+          </>
         ) : (
           <div className="grid h-full place-items-center text-slate-300 text-sm">
             Pas d&apos;image

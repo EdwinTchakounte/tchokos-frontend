@@ -42,6 +42,7 @@ export type Product = {
   category_slug: string;
   category_name: string;
   image: string | null;
+  hover_image: string | null;
 };
 
 export type ProductDetail = Product & {
