@@ -27,7 +27,7 @@ export function Header({ config, categories }: Props) {
     : null;
 
   return (
-    <header className="relative z-30 border-b border-slate-100 bg-white">
+    <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/95 backdrop-blur">
       {/* Bandeau annonce */}
       <div className="bg-ink text-white text-xs sm:text-sm">
         <div className="container-tchokos flex items-center justify-center gap-2 py-1.5 text-center">

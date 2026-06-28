@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSiteConfig, getCategories, getProducts } from "@/lib/api";
 import { Hero } from "@/components/Hero";
-import { Marquee } from "@/components/Marquee";
 import { SectionHeading } from "@/components/SectionHeading";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductGrid } from "@/components/ProductGrid";
@@ -20,8 +19,6 @@ export default async function HomePage() {
   return (
     <>
       <Hero config={config} />
-
-      <Marquee />
 
       {/* Bandeau confiance */}
       <section className="border-b border-slate-100 bg-white">

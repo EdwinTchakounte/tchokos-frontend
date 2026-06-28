@@ -8,6 +8,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { MobileNav } from "@/components/MobileNav";
+import { BackgroundDecor } from "@/components/BackgroundDecor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -55,7 +56,8 @@ export default async function RootLayout({
       lang="fr"
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-ink pb-14 md:pb-0">
+      <body className="min-h-full flex flex-col text-ink pb-14 md:pb-0">
+        <BackgroundDecor />
         <CartProvider>
           <Header config={config} categories={categories} />
           <main className="flex-1">{children}</main>
