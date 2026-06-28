@@ -5,6 +5,7 @@ import type {
   SiteConfig,
   Paginated,
   OrderResponse,
+  DeliveryZone,
 } from "./types";
 
 export const API_URL =
@@ -27,6 +28,10 @@ async function getJSON<T>(path: string, revalidate = REVALIDATE): Promise<T> {
 
 export async function getSiteConfig(): Promise<SiteConfig> {
   return getJSON<SiteConfig>("/api/site-config/");
+}
+
+export async function getDeliveryZones(): Promise<DeliveryZone[]> {
+  return getJSON<DeliveryZone[]>("/api/delivery-zones/");
 }
 
 export async function getCategories(): Promise<Category[]> {
@@ -90,6 +95,7 @@ export type OrderPayload = {
   city?: string;
   address?: string;
   note?: string;
+  zone_id?: number | null;
   items: OrderItemInput[];
 };
 

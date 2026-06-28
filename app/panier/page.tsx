@@ -4,20 +4,27 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCart } from "@/lib/cart";
-import { getSiteConfig, postOrder } from "@/lib/api";
+import { getSiteConfig, getDeliveryZones, postOrder } from "@/lib/api";
 import { formatPrice, whatsappLink } from "@/lib/format";
-import type { SiteConfig } from "@/lib/types";
+import type { SiteConfig, DeliveryZone } from "@/lib/types";
 
 export default function CartPage() {
   const { items, ready, subtotal, setQuantity, removeItem, clear } = useCart();
   const [config, setConfig] = useState<SiteConfig | null>(null);
-  const [form, setForm] = useState({ name: "", phone: "", city: "", note: "" });
+  const [zones, setZones] = useState<DeliveryZone[]>([]);
+  const [zoneId, setZoneId] = useState<number | null>(null);
+  const [form, setForm] = useState({ name: "", phone: "", note: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getSiteConfig().then(setConfig).catch(() => setConfig(null));
+    getDeliveryZones().then(setZones).catch(() => setZones([]));
   }, []);
+
+  const selectedZone = zones.find((z) => z.id === zoneId) ?? null;
+  const deliveryFee = selectedZone ? Number(selectedZone.fee) : 0;
+  const grandTotal = subtotal + deliveryFee;
 
   function update(key: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -32,8 +39,8 @@ export default function CartPage() {
       const res = await postOrder({
         customer_name: form.name,
         phone: form.phone,
-        city: form.city,
         note: form.note,
+        zone_id: zoneId,
         items: items.map((it) => ({
           product_id: it.id,
           quantity: it.quantity,
@@ -57,10 +64,13 @@ export default function CartPage() {
               )}`,
           )
           .join("\n");
+        const deliveryTxt = selectedZone
+          ? `\nLivraison (${selectedZone.name}) : ${formatPrice(deliveryFee)}\nTotal à payer : ${formatPrice(grandTotal)}`
+          : "";
         const msg =
           `Bonjour Tchokos 👋\nJe souhaite commander :\n${lines}\n\n` +
-          `Total : ${formatPrice(subtotal)}\nNom : ${form.name}` +
-          (form.city ? `\nVille : ${form.city}` : "");
+          `Sous-total : ${formatPrice(subtotal)}${deliveryTxt}\nNom : ${form.name}` +
+          (selectedZone ? `\nZone : ${selectedZone.name}` : "");
         clear();
         window.location.href = whatsappLink(config.whatsapp_number, msg);
         return;
@@ -144,20 +154,42 @@ export default function CartPage() {
           className="h-fit rounded-2xl border border-slate-100 p-5 shadow-card lg:sticky lg:top-28"
         >
           <h2 className="font-display text-lg font-bold text-ink">Finaliser la commande</h2>
-          <div className="mt-3 flex items-center justify-between border-y border-slate-100 py-3">
-            <span className="text-slate-500">Sous-total</span>
-            <span className="font-display text-xl font-bold text-ink">{formatPrice(subtotal)}</span>
-          </div>
 
           <div className="mt-4 space-y-3">
             <input required value={form.name} onChange={update("name")} placeholder="Votre nom *"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
             <input required value={form.phone} onChange={update("phone")} placeholder="Téléphone *" inputMode="tel"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
-            <input value={form.city} onChange={update("city")} placeholder="Ville / quartier"
+            <select
+              value={zoneId ?? ""}
+              onChange={(e) => setZoneId(e.target.value ? Number(e.target.value) : null)}
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none"
+            >
+              <option value="">Zone de livraison (Douala)…</option>
+              {zones.map((z) => (
+                <option key={z.id} value={z.id}>
+                  {z.name} — {formatPrice(z.fee)} (~{z.eta_minutes} min)
+                </option>
+              ))}
+            </select>
+            <textarea value={form.note} onChange={update("note")} placeholder="Note / adresse précise (optionnel)" rows={2}
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
-            <textarea value={form.note} onChange={update("note")} placeholder="Note (optionnel)" rows={2}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
+          </div>
+
+          {/* Récapitulatif chiffré */}
+          <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3 text-sm">
+            <div className="flex justify-between text-slate-500">
+              <span>Sous-total</span>
+              <span>{formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>Livraison{selectedZone ? ` (${selectedZone.name})` : ""}</span>
+              <span>{selectedZone ? formatPrice(deliveryFee) : "à choisir"}</span>
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <span className="font-semibold text-ink">Total à payer</span>
+              <span className="font-display text-xl font-bold text-ink">{formatPrice(grandTotal)}</span>
+            </div>
           </div>
 
           {error && <p className="mt-3 text-sm text-red-600">{error}</p>}

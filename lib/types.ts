@@ -64,9 +64,19 @@ export type Paginated<T> = {
   results: T[];
 };
 
+export type DeliveryZone = {
+  id: number;
+  name: string;
+  city: string;
+  fee: string;
+  eta_minutes: number;
+};
+
 export type OrderResponse = {
   reference: string;
   total: string;
+  delivery_fee: string;
+  grand_total: string;
   whatsapp_link: string;
   payment_link: string;
   payment_is_stub: boolean;
