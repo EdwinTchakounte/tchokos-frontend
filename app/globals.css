@@ -35,11 +35,11 @@
 }
 
 @layer base {
-  html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  /* overflow-x: clip protège du débordement horizontal SANS créer de conteneur
+     de défilement (contrairement à hidden), donc position: sticky reste valide. */
   body {
+    max-width: 100%;
+    overflow-x: clip;
     background-color: #fbfaf9;
     color: var(--foreground);
     font-family: var(--font-sans);

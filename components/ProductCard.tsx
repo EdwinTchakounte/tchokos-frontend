@@ -9,9 +9,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/produit/${product.slug}`}
-      className="group flex flex-col rounded-2xl bg-white ring-1 ring-slate-100 shadow-card overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:ring-brand-200 transition duration-200"
+      className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-slate-100 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-brand-200"
     >
-      <div className="relative aspect-square bg-slate-50 overflow-hidden">
+      <div className="relative aspect-square overflow-hidden bg-slate-100">
         {product.image ? (
           <>
             <Image
@@ -34,24 +34,24 @@ export function ProductCard({ product }: { product: Product }) {
             )}
           </>
         ) : (
-          <div className="grid h-full place-items-center text-slate-300 text-sm">
+          <div className="grid h-full place-items-center text-sm text-slate-300">
             Pas d&apos;image
           </div>
         )}
 
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        {/* Dégradé bas pour la profondeur */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/15 to-transparent" />
+
+        {/* Badges */}
+        <div className="absolute left-2 top-2 flex flex-col gap-1">
           {product.badge && (
-            <span
-              className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                BADGE_STYLES[product.badge] ?? "bg-ink text-white"
-              }`}
-            >
+            <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold shadow-sm ${BADGE_STYLES[product.badge] ?? "bg-ink text-white"}`}>
               {BADGE_LABELS[product.badge]}
             </span>
           )}
           {product.discount_percent > 0 && (
-            <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-[11px] font-semibold text-white">
-              -{product.discount_percent}%
+            <span className="rounded-full bg-red-600 px-2.5 py-1 text-[10px] font-bold text-white shadow-sm">
+              −{product.discount_percent}%
             </span>
           )}
         </div>
@@ -71,25 +71,28 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-brand-600">
-          {product.brand || product.category_name}
-        </p>
-        <h3 className="mt-0.5 line-clamp-2 text-sm font-medium text-ink group-hover:text-brand-700">
+      <div className="flex flex-1 flex-col p-2.5 sm:p-3">
+        <div className="flex items-center justify-between gap-2">
+          <p className="truncate text-[10px] font-bold uppercase tracking-wide text-brand-600">
+            {product.brand || product.category_name}
+          </p>
+          {product.rating_count > 0 && (
+            <span className="flex shrink-0 items-center gap-0.5 text-[11px] text-slate-400">
+              <Stars value={product.rating_avg} />
+            </span>
+          )}
+        </div>
+
+        <h3 className="mt-1 line-clamp-2 text-[13px] font-medium leading-snug text-ink group-hover:text-brand-700 sm:text-sm">
           {product.name}
         </h3>
-        {product.rating_count > 0 && (
-          <div className="mt-1 flex items-center gap-1">
-            <Stars value={product.rating_avg} />
-            <span className="text-[11px] text-slate-400">({product.rating_count})</span>
-          </div>
-        )}
-        <div className="mt-auto pt-2 flex items-baseline gap-2">
-          <span className="font-display text-base font-bold text-ink">
+
+        <div className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-2">
+          <span className="font-display text-[15px] font-extrabold text-ink sm:text-lg">
             {formatPrice(product.price)}
           </span>
           {product.compare_at_price && (
-            <span className="text-xs text-slate-400 line-through">
+            <span className="text-[11px] text-slate-400 line-through">
               {formatPrice(product.compare_at_price)}
             </span>
           )}

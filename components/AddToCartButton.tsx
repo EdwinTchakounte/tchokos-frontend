@@ -35,8 +35,8 @@ export function AddToCartButton({ product }: { product: Product }) {
       onClick={handleAdd}
       disabled={!product.in_stock}
       aria-label="Ajouter au panier"
-      className={`grid h-9 w-9 place-items-center rounded-full shadow-md transition disabled:opacity-40 ${
-        added ? "bg-cmr-green text-white" : "bg-white text-ink hover:bg-brand-600 hover:text-white"
+      className={`grid h-10 w-10 place-items-center rounded-full shadow-lg ring-1 ring-black/5 transition active:scale-90 disabled:opacity-40 ${
+        added ? "bg-cmr-green text-white" : "bg-brand-600 text-white hover:bg-brand-700"
       }`}
     >
       {added ? (
