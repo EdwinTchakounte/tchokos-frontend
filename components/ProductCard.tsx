@@ -8,7 +8,7 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/produit/${product.slug}`}
-      className="group flex flex-col rounded-2xl bg-white border border-slate-100 shadow-card overflow-hidden hover:-translate-y-1 hover:shadow-lg transition"
+      className="group flex flex-col rounded-2xl bg-white ring-1 ring-slate-100 shadow-card overflow-hidden hover:-translate-y-1 hover:shadow-xl hover:ring-brand-200 transition duration-200"
     >
       <div className="relative aspect-square bg-slate-50 overflow-hidden">
         {product.image ? (
@@ -58,8 +58,8 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-1 flex-col p-3">
-        <p className="text-[11px] uppercase tracking-wide text-slate-400">
-          {product.category_name}
+        <p className="text-[11px] font-medium uppercase tracking-wide text-brand-600">
+          {product.brand || product.category_name}
         </p>
         <h3 className="mt-0.5 line-clamp-2 text-sm font-medium text-ink group-hover:text-brand-700">
           {product.name}
