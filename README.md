@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tchokos — Frontend (Next.js)
 
-## Getting Started
+Vitrine e-commerce **mobile-first** de la plateforme Tchokos (chaussures &
+vêtements, Douala — Cameroun). Consomme l'API du backend Django/Wagtail
+(dépôt séparé `tchokos-backend`).
 
-First, run the development server:
+Inspiration UX : Jumia / Glotelho / Alibaba — moderne, rapide, orienté vente.
+
+## Stack
+- **Next.js 16** (App Router, Server Components) + **React 19**
+- **TypeScript** + **Tailwind CSS v4**
+- Polices **Inter** (texte) + **Poppins** (titres) via `next/font`
+- Images optimisées (`next/image`)
+
+## Fonctionnalités
+- Page d'accueil : hero, catégories, coups de cœur, promos, bannière revendeurs
+- Boutique avec filtres par catégorie (`/boutique?categorie=...`)
+- Pages catégorie et fiche produit (galerie + SEO dynamique)
+- **Commande via WhatsApp** : le formulaire poste la commande au backend qui
+  renvoie un lien `wa.me` pré-rempli (référence, articles, total)
+- Formulaire de contact (envoi email via Brevo côté backend)
+- Bouton WhatsApp flottant, design responsive, FR par défaut
+
+## Démarrage
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local        # NEXT_PUBLIC_API_URL=http://localhost:8000
+npm run dev                       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> ⚠️ Le backend (`tchokos-backend`) doit tourner et `NEXT_PUBLIC_API_URL`
+> pointer dessus. En local par défaut : `http://localhost:8000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run start
+```
 
-## Learn More
+## Configuration
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | URL du backend Django | `http://localhost:8000` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Le contenu (produits, catégories, numéro WhatsApp, réseaux sociaux, adresse)
+provient entièrement de l'API — rien n'est codé en dur. L'équipe Tchokos met à
+jour via le back-office Django (`/gestion/`) et Wagtail (`/cms/`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  page.tsx                 Accueil
+  boutique/                Tous les produits + filtres
+  categorie/[slug]/        Page catégorie
+  produit/[slug]/          Fiche produit + commande
+  a-propos/  contact/
+components/                Header, Footer, Hero, ProductCard, OrderForm…
+lib/                       api.ts (client), types.ts, format.ts
+```
