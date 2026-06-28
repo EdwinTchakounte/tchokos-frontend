@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
@@ -28,7 +27,7 @@ export function Header({ config, categories }: Props) {
     : null;
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-100">
+    <header className="relative z-30 border-b border-slate-100 bg-white">
       {/* Bandeau annonce */}
       <div className="bg-ink text-white text-xs sm:text-sm">
         <div className="container-tchokos flex items-center justify-center gap-2 py-1.5 text-center">
@@ -37,29 +36,54 @@ export function Header({ config, categories }: Props) {
       </div>
 
       <div className="container-tchokos flex items-center gap-4 h-16">
-        {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0" aria-label="Tchokos — accueil">
-          <Image
-            src="/logo-tchokos.png"
-            alt="Tchokos"
-            width={621}
-            height={236}
-            priority
-            className="h-9 w-auto sm:h-10"
-          />
+        {/* Logo réel Tchokos */}
+        <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Tchokos — accueil">
+          <img src="/logo-tchokos.svg" alt="Tchokos" className="h-11 w-11" />
+          <span className="font-display text-xl font-extrabold tracking-tight text-ink">
+            Tchokos
+          </span>
         </Link>
 
-        {/* Nav desktop */}
-        <nav className="hidden lg:flex items-center gap-6 ml-6 text-sm font-medium text-ink-soft shrink-0">
-          {NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-brand-600 transition">
-              {item.label}
-            </Link>
-          ))}
+        {/* Nav desktop (regroupée) */}
+        <nav className="ml-6 hidden shrink-0 items-center gap-5 text-sm font-medium text-ink-soft lg:flex">
+          <Link href="/" className="transition hover:text-brand-600">Accueil</Link>
+          <Link href="/boutique" className="transition hover:text-brand-600">Boutique</Link>
+
+          {/* Menu déroulant Catégories */}
+          {categories.length > 0 && (
+            <div className="group relative">
+              <button className="flex items-center gap-1 transition hover:text-brand-600">
+                Catégories
+                <svg className="h-4 w-4 transition-transform group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <div className="invisible absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100">
+                <div className="grid w-[36rem] grid-cols-2 gap-1 rounded-2xl border border-slate-100 bg-white p-3 shadow-xl">
+                  {categories.map((c) => (
+                    <Link
+                      key={c.slug}
+                      href={`/categorie/${c.slug}`}
+                      className="flex items-center justify-between rounded-lg px-3 py-2 text-ink-soft transition hover:bg-brand-50 hover:text-brand-700"
+                    >
+                      {c.name}
+                      <span className="text-xs text-slate-300">{c.product_count}</span>
+                    </Link>
+                  ))}
+                  <Link href="/boutique" className="col-span-2 mt-1 rounded-lg bg-brand-50 px-3 py-2 text-center text-sm font-semibold text-brand-700 hover:bg-brand-100">
+                    Voir toute la boutique →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Link href="/a-propos" className="transition hover:text-brand-600">À propos</Link>
+          <Link href="/contact" className="transition hover:text-brand-600">Contact</Link>
         </nav>
 
         {/* Recherche (desktop) */}
-        <SearchBar className="hidden md:block flex-1 mx-4 max-w-xl" />
+        <SearchBar className="hidden md:block flex-1 mx-4 max-w-lg" />
 
         <div className="ml-auto flex items-center gap-2">
           {/* Panier */}
@@ -103,23 +127,6 @@ export function Header({ config, categories }: Props) {
       <div className="md:hidden border-t border-slate-100 px-4 py-2.5">
         <SearchBar onNavigate={() => setOpen(false)} />
       </div>
-
-      {/* Barre catégories (desktop) */}
-      {categories.length > 0 && (
-        <div className="hidden md:block border-t border-slate-100 bg-brand-50/40">
-          <div className="container-tchokos flex items-center gap-6 h-11 overflow-x-auto no-scrollbar text-sm">
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/categorie/${c.slug}`}
-                className="whitespace-nowrap text-ink-soft hover:text-brand-700 font-medium"
-              >
-                {c.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Menu mobile */}
       {open && (

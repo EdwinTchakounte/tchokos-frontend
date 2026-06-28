@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Category, SiteConfig } from "@/lib/types";
 import { FooterSection } from "./FooterSection";
@@ -15,13 +14,10 @@ export function Footer({ config, categories }: Props) {
       <div className="container-tchokos grid gap-x-10 gap-y-2 py-10 md:grid-cols-4 md:gap-y-10 md:py-12">
         {/* Marque */}
         <div className="pb-4 md:pb-0">
-          <Image
-            src="/logo-tchokos-white.png"
-            alt="Tchokos"
-            width={621}
-            height={236}
-            className="h-10 w-auto"
-          />
+          <div className="flex items-center gap-2">
+            <img src="/logo-tchokos.svg" alt="Tchokos" className="h-12 w-12" />
+            <span className="font-display text-2xl font-extrabold text-white">Tchokos</span>
+          </div>
           <p className="mt-4 max-w-xs text-sm text-slate-400">
             {config?.tagline ?? "Chaussures & vêtements — la marque du Cameroun."}
           </p>
