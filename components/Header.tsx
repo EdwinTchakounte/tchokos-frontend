@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
 import { whatsappLink } from "@/lib/format";
 import { useCart } from "@/lib/cart";
+import { SearchBar } from "./SearchBar";
 
 type Props = {
   config: SiteConfig | null;
@@ -46,13 +47,16 @@ export function Header({ config, categories }: Props) {
         </Link>
 
         {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-6 ml-6 text-sm font-medium text-ink-soft">
+        <nav className="hidden lg:flex items-center gap-6 ml-6 text-sm font-medium text-ink-soft shrink-0">
           {NAV.map((item) => (
             <Link key={item.href} href={item.href} className="hover:text-brand-600 transition">
               {item.label}
             </Link>
           ))}
         </nav>
+
+        {/* Recherche (desktop) */}
+        <SearchBar className="hidden md:block flex-1 mx-4 max-w-xl" />
 
         <div className="ml-auto flex items-center gap-2">
           {/* Panier */}
@@ -90,6 +94,11 @@ export function Header({ config, categories }: Props) {
             {open ? <CloseIcon /> : <MenuIcon />}
           </button>
         </div>
+      </div>
+
+      {/* Recherche (mobile) */}
+      <div className="md:hidden border-t border-slate-100 px-4 py-2.5">
+        <SearchBar onNavigate={() => setOpen(false)} />
       </div>
 
       {/* Barre catégories (desktop) */}
