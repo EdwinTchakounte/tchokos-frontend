@@ -34,12 +34,18 @@ export async function getCategories(): Promise<Category[]> {
   return data.results;
 }
 
+export type SortOption = "price_asc" | "price_desc" | "name" | "recent";
+
 export type ProductFilters = {
   category?: string;
   target?: string;
   featured?: boolean;
   search?: string;
   inStock?: boolean;
+  onSale?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: SortOption;
 };
 
 export async function getProducts(
@@ -50,7 +56,11 @@ export async function getProducts(
   if (filters.target) qs.set("target", filters.target);
   if (filters.featured) qs.set("featured", "1");
   if (filters.inStock) qs.set("in_stock", "1");
+  if (filters.onSale) qs.set("on_sale", "1");
   if (filters.search) qs.set("search", filters.search);
+  if (filters.minPrice != null) qs.set("min_price", String(filters.minPrice));
+  if (filters.maxPrice != null) qs.set("max_price", String(filters.maxPrice));
+  if (filters.sort) qs.set("sort", filters.sort);
   const query = qs.toString();
   const data = await getJSON<Paginated<Product>>(
     `/api/products/${query ? `?${query}` : ""}`,
