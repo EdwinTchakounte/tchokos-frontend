@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
+import { AddToCartButton } from "./AddToCartButton";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
@@ -46,6 +47,12 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="rounded-full bg-ink/90 px-3 py-1 text-xs font-semibold text-white">
               Bientôt de retour
             </span>
+          </div>
+        )}
+
+        {product.in_stock && (
+          <div className="absolute bottom-2 right-2">
+            <AddToCartButton product={product} />
           </div>
         )}
       </div>

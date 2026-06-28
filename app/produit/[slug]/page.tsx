@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProduct, getProducts, getSiteConfig } from "@/lib/api";
+import { getProduct, getProducts } from "@/lib/api";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { ProductGallery } from "@/components/ProductGallery";
-import { OrderForm } from "@/components/OrderForm";
+import { ProductPurchase } from "@/components/ProductPurchase";
 import { ProductGrid } from "@/components/ProductGrid";
 import { SectionHeading } from "@/components/SectionHeading";
 
@@ -27,10 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const [product, config] = await Promise.all([
-    getProduct(slug),
-    getSiteConfig().catch(() => null),
-  ]);
+  const product = await getProduct(slug);
 
   if (!product) notFound();
 
@@ -105,7 +102,7 @@ export default async function ProductPage({ params }: Props) {
           )}
 
           <div className="mt-7 rounded-2xl border border-slate-100 p-5 shadow-card">
-            <OrderForm product={product} config={config} />
+            <ProductPurchase product={product} />
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 
 import { getSiteConfig, getCategories } from "@/lib/api";
+import { CartProvider } from "@/lib/cart";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
@@ -54,12 +55,14 @@ export default async function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-white text-ink">
-        <Header config={config} categories={categories} />
-        <main className="flex-1">{children}</main>
-        <Footer config={config} categories={categories} />
-        {config?.whatsapp_number ? (
-          <WhatsAppFloat number={config.whatsapp_number} />
-        ) : null}
+        <CartProvider>
+          <Header config={config} categories={categories} />
+          <main className="flex-1">{children}</main>
+          <Footer config={config} categories={categories} />
+          {config?.whatsapp_number ? (
+            <WhatsAppFloat number={config.whatsapp_number} />
+          ) : null}
+        </CartProvider>
       </body>
     </html>
   );

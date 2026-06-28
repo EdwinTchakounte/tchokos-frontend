@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
 import { whatsappLink } from "@/lib/format";
+import { useCart } from "@/lib/cart";
 
 type Props = {
   config: SiteConfig | null;
@@ -19,6 +20,7 @@ const NAV = [
 
 export function Header({ config, categories }: Props) {
   const [open, setOpen] = useState(false);
+  const { count, ready } = useCart();
   const wa = config?.whatsapp_number
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋, je souhaite des informations.")
     : null;
@@ -53,6 +55,19 @@ export function Header({ config, categories }: Props) {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          {/* Panier */}
+          <Link
+            href="/panier"
+            className="relative grid h-10 w-10 place-items-center rounded-lg hover:bg-slate-100"
+            aria-label="Panier"
+          >
+            <CartIcon />
+            {ready && count > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1 text-[11px] font-bold text-white">
+                {count}
+              </span>
+            )}
+          </Link>
           {wa && (
             <a
               href={wa}
@@ -135,6 +150,16 @@ export function Header({ config, categories }: Props) {
         </div>
       )}
     </header>
+  );
+}
+
+function CartIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="9" cy="20" r="1.4" />
+      <circle cx="18" cy="20" r="1.4" />
+      <path d="M2.5 3h2l2.2 12.2a1.5 1.5 0 001.5 1.3h8.6a1.5 1.5 0 001.5-1.2L21 7H6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
