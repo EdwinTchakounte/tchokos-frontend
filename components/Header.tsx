@@ -15,6 +15,7 @@ type Props = {
 const NAV = [
   { href: "/", label: "Accueil" },
   { href: "/boutique", label: "Boutique" },
+  { href: "/services", label: "Services" },
   { href: "/a-propos", label: "À propos" },
   { href: "/contact", label: "Contact" },
 ];
@@ -48,6 +49,7 @@ export function Header({ config, categories }: Props) {
         <nav className="ml-6 hidden shrink-0 items-center gap-5 text-sm font-medium text-ink-soft lg:flex">
           <Link href="/" className="transition hover:text-brand-600">Accueil</Link>
           <Link href="/boutique" className="transition hover:text-brand-600">Boutique</Link>
+          <Link href="/services" className="transition hover:text-brand-600">Services</Link>
 
           {/* Menu déroulant Catégories */}
           {categories.length > 0 && (

@@ -44,6 +44,7 @@ export function Footer({ config, categories }: Props) {
         <FooterSection title="Tchokos">
           <ul className="space-y-2 text-sm text-slate-400">
             <li><Link href="/a-propos" className="hover:text-brand-400">À propos</Link></li>
+            <li><Link href="/services" className="hover:text-brand-400">Nos services</Link></li>
             <li><Link href="/boutique" className="hover:text-brand-400">Tous les produits</Link></li>
             <li><Link href="/contact" className="hover:text-brand-400">Contact</Link></li>
             <li><Link href="/vendeur" className="hover:text-brand-400">Espace vendeur</Link></li>
