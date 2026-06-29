@@ -19,7 +19,7 @@ type Service = {
 const SERVICES: Service[] = [
   {
     icon: "👟",
-    title: "Chaussures — gros & détail",
+    title: "Chaussures gros & détail",
     text: "Le cœur de métier de Tchokos : un mur de chaussures pour toute la famille, à prix grossiste pour les revendeurs comme au détail.",
     items: [
       "Femme : escarpins, talons, sandales, ballerines",
@@ -95,7 +95,7 @@ export default async function ServicesPage() {
         <div className="pointer-events-none absolute -bottom-16 left-1/4 h-72 w-72 rounded-full bg-cmr-green/20 blur-3xl" />
         <div className="container-tchokos relative text-center">
           <span className="inline-flex rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-brand-200">
-            Tchokos — « The Best, Made in Africa »
+            Tchokos · « The Best, Made in Africa »
           </span>
           <h1 className="mx-auto mt-4 max-w-2xl font-display text-2xl font-extrabold sm:text-5xl">
             Nos services

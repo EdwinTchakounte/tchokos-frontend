@@ -25,7 +25,7 @@ export function Hero({ config, ctaLabel }: Props) {
       <div className="container-tchokos w-full py-16 text-center sm:py-20">
         <div className="mx-auto max-w-4xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold text-brand-100 backdrop-blur animate-fade-up">
-            🇨🇲 Akwa · Douala — « The Best, Made in Africa »
+            🇨🇲 Akwa · Douala · « The Best, Made in Africa »
           </span>
 
           <h1 className="mx-auto mt-5 max-w-4xl font-display text-[1.55rem] font-extrabold leading-[1.15] animate-fade-up sm:text-5xl lg:text-6xl">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 
@@ -9,6 +9,8 @@ import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { MobileNav } from "@/components/MobileNav";
 import { BackgroundDecor } from "@/components/BackgroundDecor";
+import { PWARegister } from "@/components/PWARegister";
+import { ChatBot } from "@/components/ChatBot";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,6 +42,16 @@ export const metadata: Metadata = {
     locale: "fr_CM",
     type: "website",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "Tchokos", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: "/icon-192.png",
+    apple: "/apple-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ea580c",
 };
 
 export default async function RootLayout({
@@ -66,7 +78,9 @@ export default async function RootLayout({
             <WhatsAppFloat number={config.whatsapp_number} />
           ) : null}
           <MobileNav />
+          <ChatBot />
         </CartProvider>
+        <PWARegister />
       </body>
     </html>
   );

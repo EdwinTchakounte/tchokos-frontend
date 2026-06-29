@@ -67,6 +67,11 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Masque le bouton WhatsApp flottant quand le menu mobile est ouvert
+   (évite le doublon avec le CTA WhatsApp du menu) */
+body.menu-open .wa-float,
+body.menu-open .chat-float { opacity: 0; pointer-events: none; }
+
 /* ---------------------------------------------------------------------------
    Animations (entrées + micro-mouvements vivants)
 --------------------------------------------------------------------------- */

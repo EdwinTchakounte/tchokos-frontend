@@ -19,7 +19,7 @@ export function Footer({ config, categories }: Props) {
             <span className="font-display text-2xl font-extrabold text-white">Tchokos</span>
           </div>
           <p className="mt-4 max-w-xs text-sm text-slate-400">
-            {config?.tagline ?? "Chaussures & vêtements — la marque du Cameroun."}
+            {config?.tagline ?? "Chaussures & vêtements · la marque du Cameroun."}
           </p>
           <p className="mt-3 text-sm text-slate-400">{config?.address}</p>
           <div className="mt-4 flex gap-3 text-sm">
@@ -68,7 +68,7 @@ export function Footer({ config, categories }: Props) {
 
       <div className="border-t border-white/10">
         <div className="container-tchokos flex flex-col justify-between gap-2 py-5 text-xs text-slate-500 sm:flex-row">
-          <p>© {new Date().getFullYear()} {config?.site_name ?? "Tchokos"} Sarl — Douala, Cameroun.</p>
+          <p>© {new Date().getFullYear()} {config?.site_name ?? "Tchokos"} Sarl · Douala, Cameroun.</p>
           <p>Paiement Mobile Money · Commande via WhatsApp</p>
         </div>
       </div>

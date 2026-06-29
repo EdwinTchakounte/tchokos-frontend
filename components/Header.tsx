@@ -28,10 +28,14 @@ export function Header({ config, categories }: Props) {
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋, je souhaite des informations.")
     : null;
 
-  // Verrouille le scroll du body quand le menu mobile est ouvert
+  // Verrouille le scroll + masque le bouton WhatsApp flottant quand le menu est ouvert
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    document.body.classList.toggle("menu-open", open);
+    return () => {
+      document.body.style.overflow = "";
+      document.body.classList.remove("menu-open");
+    };
   }, [open]);
 
   const close = () => setOpen(false);
