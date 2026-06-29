@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
 import { whatsappLink } from "@/lib/format";
 import { useCart } from "@/lib/cart";
@@ -13,34 +13,43 @@ type Props = {
 };
 
 const NAV = [
-  { href: "/", label: "Accueil" },
-  { href: "/boutique", label: "Boutique" },
-  { href: "/services", label: "Services" },
-  { href: "/a-propos", label: "À propos" },
-  { href: "/contact", label: "Contact" },
-];
+  { href: "/", label: "Accueil", icon: "home" },
+  { href: "/boutique", label: "Boutique", icon: "bag" },
+  { href: "/services", label: "Services", icon: "spark" },
+  { href: "/a-propos", label: "À propos", icon: "info" },
+  { href: "/contact", label: "Contact", icon: "chat" },
+] as const;
 
 export function Header({ config, categories }: Props) {
   const [open, setOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   const { count, ready } = useCart();
   const wa = config?.whatsapp_number
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋, je souhaite des informations.")
     : null;
 
+  // Verrouille le scroll du body quand le menu mobile est ouvert
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  const close = () => setOpen(false);
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-100 bg-white/95 backdrop-blur">
       {/* Bandeau annonce */}
-      <div className="bg-ink text-white text-xs sm:text-sm">
+      <div className="bg-ink text-white text-[11px] sm:text-sm">
         <div className="container-tchokos flex items-center justify-center gap-2 py-1.5 text-center">
-          <span>🚚 Livraison à Douala · Commande facile sur WhatsApp · Paiement Mobile Money</span>
+          <span>🚚 Livraison à Douala · Commande sur WhatsApp · Mobile Money</span>
         </div>
       </div>
 
-      <div className="container-tchokos flex items-center gap-4 h-16">
+      <div className="container-tchokos flex h-14 items-center gap-3 sm:h-16 sm:gap-4">
         {/* Logo réel Tchokos */}
-        <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Tchokos — accueil">
-          <img src="/logo-tchokos.svg" alt="Tchokos" className="h-11 w-11" />
-          <span className="font-display text-xl font-extrabold tracking-tight text-ink">
+        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Tchokos — accueil">
+          <img src="/logo-tchokos.svg" alt="Tchokos" className="h-9 w-9 sm:h-11 sm:w-11" />
+          <span className="font-display text-lg font-extrabold tracking-tight text-ink sm:text-xl">
             Tchokos
           </span>
         </Link>
@@ -50,8 +59,6 @@ export function Header({ config, categories }: Props) {
           <Link href="/" className="transition hover:text-brand-600">Accueil</Link>
           <Link href="/boutique" className="transition hover:text-brand-600">Boutique</Link>
           <Link href="/services" className="transition hover:text-brand-600">Services</Link>
-
-          {/* Menu déroulant Catégories */}
           {categories.length > 0 && (
             <div className="group relative">
               <button className="flex items-center gap-1 transition hover:text-brand-600">
@@ -63,13 +70,8 @@ export function Header({ config, categories }: Props) {
               <div className="invisible absolute left-1/2 top-full z-40 -translate-x-1/2 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100">
                 <div className="grid w-[36rem] grid-cols-2 gap-1 rounded-2xl border border-slate-100 bg-white p-3 shadow-xl">
                   {categories.map((c) => (
-                    <Link
-                      key={c.slug}
-                      href={`/categorie/${c.slug}`}
-                      className="flex items-center justify-between rounded-lg px-3 py-2 text-ink-soft transition hover:bg-brand-50 hover:text-brand-700"
-                    >
-                      {c.name}
-                      <span className="text-xs text-slate-300">{c.product_count}</span>
+                    <Link key={c.slug} href={`/categorie/${c.slug}`} className="flex items-center justify-between rounded-lg px-3 py-2 text-ink-soft transition hover:bg-brand-50 hover:text-brand-700">
+                      {c.name}<span className="text-xs text-slate-300">{c.product_count}</span>
                     </Link>
                   ))}
                   <Link href="/boutique" className="col-span-2 mt-1 rounded-lg bg-brand-50 px-3 py-2 text-center text-sm font-semibold text-brand-700 hover:bg-brand-100">
@@ -79,125 +81,148 @@ export function Header({ config, categories }: Props) {
               </div>
             </div>
           )}
-
           <Link href="/a-propos" className="transition hover:text-brand-600">À propos</Link>
           <Link href="/contact" className="transition hover:text-brand-600">Contact</Link>
         </nav>
 
         {/* Recherche (desktop) */}
-        <SearchBar className="hidden md:block flex-1 mx-4 max-w-lg" />
+        <SearchBar className="mx-4 hidden max-w-lg flex-1 md:block" />
 
-        <div className="ml-auto flex items-center gap-2">
-          {/* Panier */}
-          <Link
-            href="/panier"
-            className="relative grid h-10 w-10 place-items-center rounded-lg hover:bg-slate-100"
-            aria-label="Panier"
-          >
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <Link href="/panier" className="relative grid h-10 w-10 place-items-center rounded-xl hover:bg-slate-100" aria-label="Panier">
             <CartIcon />
             {ready && count > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1 text-[11px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-brand-600 px-1 text-[11px] font-bold text-white">
                 {count}
               </span>
             )}
           </Link>
           {wa && (
-            <a
-              href={wa}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 rounded-full bg-cmr-green px-4 py-2 text-sm font-semibold text-white hover:bg-cmr-green-dark transition"
-            >
-              <WhatsAppIcon className="h-4 w-4" />
-              Commander
+            <a href={wa} target="_blank" rel="noopener noreferrer"
+              className="hidden items-center gap-2 rounded-full bg-cmr-green px-4 py-2 text-sm font-semibold text-white transition hover:bg-cmr-green-dark sm:inline-flex">
+              <WhatsAppIcon className="h-4 w-4" /> Commander
             </a>
           )}
-          {/* Burger mobile */}
+          {/* Bouton menu personnalisé (hamburger animé) */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="md:hidden grid place-items-center h-10 w-10 rounded-lg hover:bg-slate-100"
-            aria-label="Menu"
-            aria-expanded={open}
+            className="grid h-10 w-10 place-items-center rounded-xl bg-ink text-white transition active:scale-90 lg:hidden"
+            aria-label="Menu" aria-expanded={open}
           >
-            <span className="sr-only">Ouvrir le menu</span>
-            {open ? <CloseIcon /> : <MenuIcon />}
+            <span className="relative block h-3.5 w-5">
+              <span className={`absolute left-0 block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${open ? "top-1.5 rotate-45" : "top-0"}`} />
+              <span className={`absolute left-0 top-1.5 block h-0.5 w-5 rounded-full bg-white transition-all duration-200 ${open ? "opacity-0" : "opacity-100"}`} />
+              <span className={`absolute left-0 block h-0.5 w-5 rounded-full bg-white transition-all duration-300 ${open ? "top-1.5 -rotate-45" : "top-3"}`} />
+            </span>
           </button>
         </div>
       </div>
 
       {/* Recherche (mobile) */}
-      <div className="md:hidden border-t border-slate-100 px-4 py-2.5">
-        <SearchBar onNavigate={() => setOpen(false)} />
+      <div className="border-t border-slate-100 px-4 py-2.5 md:hidden">
+        <SearchBar onNavigate={close} />
       </div>
 
-      {/* Menu mobile */}
-      {open && (
-        <div className="md:hidden border-t border-slate-100 bg-white">
-          <nav className="container-tchokos py-3 flex flex-col">
+      {/* ---------- Drawer mobile premium ---------- */}
+      {/* Backdrop */}
+      <div
+        onClick={close}
+        className={`fixed inset-0 z-40 bg-ink/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      />
+      {/* Panneau */}
+      <aside
+        className={`fixed right-0 top-0 z-50 flex h-dvh w-[84%] max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden ${open ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 p-4">
+          <Link href="/" onClick={close} className="flex items-center gap-2">
+            <img src="/logo-tchokos.svg" alt="Tchokos" className="h-9 w-9" />
+            <span className="font-display text-lg font-extrabold text-ink">Tchokos</span>
+          </Link>
+          <button onClick={close} aria-label="Fermer" className="grid h-9 w-9 place-items-center rounded-lg text-ink-soft hover:bg-slate-100">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto p-3">
+          <div className="space-y-1">
             {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="py-2.5 font-medium border-b border-slate-50"
-              >
+              <Link key={item.href} href={item.href} onClick={close}
+                className="flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-semibold text-ink transition hover:bg-brand-50 hover:text-brand-700">
+                <span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-ink-soft">
+                  <NavIcon name={item.icon} />
+                </span>
                 {item.label}
               </Link>
             ))}
-            <p className="pt-3 pb-1 text-xs uppercase tracking-wide text-slate-400">
-              Catégories
-            </p>
-            {categories.map((c) => (
-              <Link
-                key={c.slug}
-                href={`/categorie/${c.slug}`}
-                onClick={() => setOpen(false)}
-                className="py-2 text-ink-soft"
-              >
-                {c.name}
-              </Link>
-            ))}
-            {wa && (
-              <a
-                href={wa}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-cmr-green px-4 py-2.5 font-semibold text-white"
-              >
-                <WhatsAppIcon className="h-4 w-4" /> Commander sur WhatsApp
-              </a>
-            )}
-          </nav>
+          </div>
+
+          {/* Catégories (accordéon) */}
+          {categories.length > 0 && (
+            <div className="mt-2 rounded-xl bg-slate-50 p-1">
+              <button onClick={() => setCatOpen((v) => !v)}
+                className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold text-ink">
+                Catégories
+                <svg className={`h-4 w-4 text-slate-400 transition-transform ${catOpen ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+              {catOpen && (
+                <div className="grid grid-cols-2 gap-1 px-1 pb-1">
+                  {categories.map((c) => (
+                    <Link key={c.slug} href={`/categorie/${c.slug}`} onClick={close}
+                      className="rounded-lg bg-white px-3 py-2 text-xs font-medium text-ink-soft hover:text-brand-700">
+                      {c.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </nav>
+
+        {/* Pied du drawer */}
+        <div className="border-t border-slate-100 p-4">
+          {wa && (
+            <a href={wa} target="_blank" rel="noopener noreferrer"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-cmr-green px-4 py-3 font-semibold text-white">
+              <WhatsAppIcon className="h-5 w-5" /> Commander sur WhatsApp
+            </a>
+          )}
+          {config?.social && (
+            <div className="mt-3 flex justify-center gap-4 text-xs font-medium text-slate-400">
+              {config.social.tiktok && <a href={config.social.tiktok} target="_blank" rel="noopener noreferrer" className="hover:text-ink">TikTok</a>}
+              {config.social.facebook && <a href={config.social.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-ink">Facebook</a>}
+              {config.social.instagram && <a href={config.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-ink">Instagram</a>}
+            </div>
+          )}
         </div>
-      )}
+      </aside>
     </header>
+  );
+}
+
+function NavIcon({ name }: { name: string }) {
+  const p: Record<string, string> = {
+    home: "M3 11l9-7 9 7M5 10v10h14V10",
+    bag: "M6 7h12l-1 13H7L6 7zM9 7a3 3 0 016 0",
+    spark: "M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z",
+    info: "M12 16v-5M12 8h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+    chat: "M21 12a8 8 0 01-11.6 7.1L3 21l1.9-6.4A8 8 0 1121 12z",
+  };
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d={p[name] ?? p.info} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
 function CartIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <circle cx="9" cy="20" r="1.4" />
-      <circle cx="18" cy="20" r="1.4" />
+      <circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" />
       <path d="M2.5 3h2l2.2 12.2a1.5 1.5 0 001.5 1.3h8.6a1.5 1.5 0 001.5-1.2L21 7H6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function MenuIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M3 6h18M3 12h18M3 18h18" strokeLinecap="round" />
-    </svg>
-  );
-}
-function CloseIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-    </svg>
-  );
-}
 export function WhatsAppIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>

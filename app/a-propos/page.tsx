@@ -33,7 +33,7 @@ export default async function AboutPage() {
           <span className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-brand-200">
             Notre histoire
           </span>
-          <h1 className="mt-4 max-w-2xl font-display text-3xl font-extrabold sm:text-4xl lg:text-5xl">
+          <h1 className="mt-4 max-w-2xl font-display text-2xl font-extrabold sm:text-4xl lg:text-5xl">
             La mode camerounaise, accessible à tous.
           </h1>
           <p className="mt-4 max-w-2xl text-slate-200">

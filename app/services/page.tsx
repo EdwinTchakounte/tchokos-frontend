@@ -97,7 +97,7 @@ export default async function ServicesPage() {
           <span className="inline-flex rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-brand-200">
             Tchokos — « The Best, Made in Africa »
           </span>
-          <h1 className="mx-auto mt-4 max-w-2xl font-display text-3xl font-extrabold sm:text-5xl">
+          <h1 className="mx-auto mt-4 max-w-2xl font-display text-2xl font-extrabold sm:text-5xl">
             Nos services
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-slate-300 sm:text-base">

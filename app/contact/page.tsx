@@ -13,50 +13,88 @@ export default async function ContactPage() {
   const wa = config?.whatsapp_number
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋")
     : null;
+  const social = config?.social;
 
   return (
-    <div className="container-tchokos py-12">
-      <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Contact</h1>
-      <p className="mt-1 max-w-xl text-slate-500">
-        Une question, une commande, un partenariat ? Écrivez-nous — on répond vite.
-      </p>
+    <div className="container-tchokos py-8 sm:py-12">
+      <header className="max-w-2xl">
+        <span className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
+          On vous répond vite
+        </span>
+        <h1 className="mt-3 font-display text-2xl font-extrabold text-ink sm:text-3xl">
+          Contactez Tchokos
+        </h1>
+        <p className="mt-1.5 text-sm text-slate-500 sm:text-base">
+          Une question, une commande ou un partenariat ? Choisissez le canal qui
+          vous arrange — on est à Akwa, Douala.
+        </p>
+      </header>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_1.2fr]">
-        {/* Coordonnées */}
+      {/* Canaux rapides */}
+      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+        {wa && (
+          <ChannelCard
+            href={wa}
+            external
+            tone="green"
+            icon="💬"
+            label="WhatsApp"
+            value="Réponse rapide"
+          />
+        )}
+        {config?.phone && (
+          <ChannelCard
+            href={`tel:${config.phone}`}
+            tone="brand"
+            icon="📞"
+            label="Appeler"
+            value={config.phone}
+          />
+        )}
+        {config?.email && (
+          <ChannelCard
+            href={`mailto:${config.email}`}
+            tone="ink"
+            icon="✉️"
+            label="Email"
+            value={config.email}
+          />
+        )}
+      </div>
+
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.3fr]">
+        {/* Infos */}
         <div className="space-y-4">
-          {config?.address && (
-            <InfoRow icon="📍" title="Adresse">
-              {config.address}
-            </InfoRow>
-          )}
-          {config?.phone && (
-            <InfoRow icon="📞" title="Téléphone">
-              <a href={`tel:${config.phone}`} className="hover:text-brand-600">
-                {config.phone}
-              </a>
-            </InfoRow>
-          )}
-          {config?.email && (
-            <InfoRow icon="✉️" title="Email">
-              <a href={`mailto:${config.email}`} className="hover:text-brand-600">
-                {config.email}
-              </a>
-            </InfoRow>
-          )}
-          {wa && (
-            <a
-              href={wa}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-cmr-green px-5 py-3 font-semibold text-white hover:bg-cmr-green-dark transition"
-            >
-              Discuter sur WhatsApp
-            </a>
+          <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+            <h2 className="font-display text-base font-bold text-ink">Notre boutique</h2>
+            <div className="mt-3 flex items-start gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-50">📍</span>
+              <p className="text-sm text-slate-500">{config?.address}</p>
+            </div>
+            <div className="mt-4 flex items-start gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-50">🕘</span>
+              <p className="text-sm text-slate-500">Lun – Sam · 8h – 19h</p>
+            </div>
+          </div>
+
+          {social && (social.tiktok || social.facebook || social.instagram) && (
+            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
+              <h2 className="font-display text-base font-bold text-ink">Suivez-nous</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {social.tiktok && <Social href={social.tiktok} label="TikTok" />}
+                {social.facebook && <Social href={social.facebook} label="Facebook" />}
+                {social.instagram && <Social href={social.instagram} label="Instagram" />}
+              </div>
+            </div>
           )}
         </div>
 
         {/* Formulaire */}
-        <div className="rounded-2xl border border-slate-100 p-6 shadow-card">
+        <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card sm:p-6">
+          <h2 className="font-display text-base font-bold text-ink sm:text-lg">
+            Écrivez-nous
+          </h2>
+          <p className="mb-4 text-sm text-slate-500">On vous recontacte rapidement.</p>
           <ContactForm />
         </div>
       </div>
@@ -64,24 +102,53 @@ export default async function ContactPage() {
   );
 }
 
-function InfoRow({
+function ChannelCard({
+  href,
+  external,
+  tone,
   icon,
-  title,
-  children,
+  label,
+  value,
 }: {
+  href: string;
+  external?: boolean;
+  tone: "green" | "brand" | "ink";
   icon: string;
-  title: string;
-  children: React.ReactNode;
+  label: string;
+  value: string;
 }) {
+  const tones: Record<string, string> = {
+    green: "from-cmr-green/10 to-cmr-green/5 ring-cmr-green/20",
+    brand: "from-brand-100 to-brand-50 ring-brand-200",
+    ink: "from-slate-100 to-slate-50 ring-slate-200",
+  };
   return (
-    <div className="flex items-start gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-50 text-lg">
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      className={`group flex items-center gap-3 rounded-2xl bg-gradient-to-br p-4 ring-1 transition hover:-translate-y-0.5 hover:shadow-card ${tones[tone]}`}
+    >
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-xl shadow-sm">
         {icon}
       </span>
-      <div>
-        <p className="text-sm font-semibold text-ink">{title}</p>
-        <p className="text-sm text-slate-500">{children}</p>
-      </div>
-    </div>
+      <span className="min-w-0">
+        <span className="block text-sm font-bold text-ink">{label}</span>
+        <span className="block truncate text-xs text-slate-500">{value}</span>
+      </span>
+    </a>
+  );
+}
+
+function Social({ href, label }: { href: string; label: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium text-ink-soft transition hover:bg-brand-50 hover:text-brand-700"
+    >
+      {label}
+    </a>
   );
 }
