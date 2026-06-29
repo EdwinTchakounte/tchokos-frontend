@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getSiteConfig, getCategories, getProducts } from "@/lib/api";
 import { Hero } from "@/components/Hero";
+import { Services } from "@/components/Services";
 import { SectionHeading } from "@/components/SectionHeading";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductGrid } from "@/components/ProductGrid";
@@ -55,6 +56,9 @@ export default async function HomePage() {
           <ProductGrid products={featured.slice(0, 8)} />
         </section>
       )}
+
+      {/* Nos services (faits vérifiés) */}
+      <Services />
 
       {/* Comment ça marche */}
       <section className="container-tchokos py-12 sm:py-16">

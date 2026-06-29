@@ -55,6 +55,13 @@ export default async function AboutPage() {
             l&apos;une des références de la chaussure et du vêtement au Cameroun.
           </p>
           <p>
+            En juillet 2025, un incendie a ravagé la boutique d&apos;Akwa.
+            Quelques jours plus tard, Tchokos rouvrait dans un local plus grand
+            et modernisé — fidèle à sa devise <b>« The Best, Made in Africa »</b>.
+            Cette résilience est devenue un symbole pour toute une génération
+            d&apos;entrepreneurs.
+          </p>
+          <p>
             Notre mission : structurer cette énergie en une plateforme moderne qui
             relie vendeurs, acheteurs et livreurs, met en avant les produits
             locaux et crée de l&apos;emploi pour la jeunesse.
@@ -63,6 +70,13 @@ export default async function AboutPage() {
             « Le feu peut détruire la hutte, mais jamais la volonté de
             reconstruire. »
           </blockquote>
+
+          {/* Chiffres clés (vérifiés) */}
+          <div className="grid grid-cols-3 gap-3 pt-2">
+            <KeyFact value="50+" label="emplois créés" />
+            <KeyFact value="2" label="villes livrées" />
+            <KeyFact value="850K+" label="abonnés" />
+          </div>
         </div>
 
         <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-2xl shadow-ink/10">
@@ -111,6 +125,15 @@ function Value({ icon, title, text }: { icon: string; title: string; text: strin
       <div className="text-2xl">{icon}</div>
       <h3 className="mt-2 font-semibold text-ink">{title}</h3>
       <p className="mt-1 text-sm text-slate-500">{text}</p>
+    </div>
+  );
+}
+
+function KeyFact({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-2xl bg-brand-50 px-3 py-4 text-center">
+      <p className="font-display text-xl font-extrabold text-brand-700 sm:text-2xl">{value}</p>
+      <p className="text-xs text-slate-500">{label}</p>
     </div>
   );
 }
