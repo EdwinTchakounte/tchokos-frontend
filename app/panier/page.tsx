@@ -135,7 +135,10 @@ export default function CartPage() {
         phone: form.phone,
         email: form.email,
         note: form.note,
-        with_delivery: false,
+        // Paiement en ligne : avec livraison si une zone est choisie, sinon retrait.
+        pay_online: true,
+        with_delivery: zoneId != null,
+        zone_id: zoneId,
         items: items.map((it) => ({ product_id: it.id, quantity: it.quantity, size: it.size })),
       });
       // Wave (Sénégal/CI) renvoie une page hébergée → redirection. Au Cameroun
@@ -319,10 +322,12 @@ export default function CartPage() {
           </div>
           <button type="button" onClick={handlePayNow} disabled={loading}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full border-2 border-brand-600 px-6 py-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-50 disabled:opacity-60">
-            📱 Payer maintenant (Mobile Money)
+            📱 Payer en ligne (Mobile Money)
           </button>
           <p className="mt-1.5 text-center text-[11px] text-slate-400">
-            Paiement immédiat via Tara · sans livraison (retrait)
+            {selectedZone
+              ? `Paiement immédiat via Tara · livraison ${selectedZone.name} incluse (${formatPrice(grandTotal)})`
+              : "Paiement immédiat via Tara · retrait (choisissez une zone pour être livré)"}
           </p>
 
           {/* Réassurance */}

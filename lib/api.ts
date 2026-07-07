@@ -98,8 +98,10 @@ export type OrderPayload = {
   note?: string;
   zone_id?: number | null;
   items: OrderItemInput[];
-  // false = paiement Tara direct, sans livraison
+  // with_delivery = livraison à domicile (zone). pay_online = payer via Tara.
+  // Les deux sont indépendants : on peut avoir livraison ET paiement en ligne.
   with_delivery?: boolean;
+  pay_online?: boolean;
 };
 
 export async function postOrder(payload: OrderPayload): Promise<OrderResponse> {
