@@ -25,8 +25,24 @@ const DELIVERY_META: { key: keyof Overview["delivery"]; label: string; tone: str
   { key: "expired", label: "Expirées", tone: "text-red-500" },
 ];
 
-function fmtDay(iso: string) {
-  return new Date(iso + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+const RANGES = [
+  { d: 7, label: "7 j" },
+  { d: 30, label: "30 j" },
+  { d: 90, label: "90 j" },
+  { d: 365, label: "12 mois" },
+] as const;
+
+type RangeDays = (typeof RANGES)[number]["d"];
+
+function periodLabel(days: number) {
+  return days >= 365 ? "12 mois" : `${days} j`;
+}
+
+function fmtDate(iso: string, gran: "day" | "month" = "day") {
+  const d = new Date(iso + "T00:00:00");
+  return gran === "month"
+    ? d.toLocaleDateString("fr-FR", { month: "short" })
+    : d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
 function StatCard({ label, value, tone = "slate", hint }: { label: string; value: string; tone?: string; hint?: string }) {
@@ -45,12 +61,13 @@ function StatCard({ label, value, tone = "slate", hint }: { label: string; value
 
 /** Graphe 30 jours — aire (CA) ou barres (commandes), avec survol. Un seul axe. */
 function TrendChart({
-  data, kind, colorClass, format,
+  data, kind, colorClass, format, granularity = "day",
 }: {
   data: { date: string; value: number }[];
   kind: "area" | "bars";
   colorClass: string;
   format: (n: number) => string;
+  granularity?: "day" | "month";
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const W = 720, H = 180, padX = 10, padTop = 14, padBottom = 26;
@@ -95,15 +112,15 @@ function TrendChart({
       </svg>
       {/* étiquettes d'axe : début / milieu / fin */}
       <div className="mt-1 flex justify-between px-1 text-[10px] text-slate-400">
-        <span>{fmtDay(data[0].date)}</span>
-        <span>{fmtDay(data[Math.floor(n / 2)].date)}</span>
-        <span>{fmtDay(data[n - 1].date)}</span>
+        <span>{fmtDate(data[0].date, granularity)}</span>
+        <span>{fmtDate(data[Math.floor(n / 2)].date, granularity)}</span>
+        <span>{fmtDate(data[n - 1].date, granularity)}</span>
       </div>
       {/* tooltip */}
       {hover !== null && (
         <div className="pointer-events-none absolute -top-1 z-10 -translate-x-1/2 rounded-lg bg-ink px-2 py-1 text-center text-[11px] font-medium text-white shadow-lg"
           style={{ left: `${(hover / (n - 1 || 1)) * 100}%` }}>
-          <div className="opacity-70">{fmtDay(data[hover].date)}</div>
+          <div className="opacity-70">{fmtDate(data[hover].date, granularity)}</div>
           <div className="font-bold">{format(data[hover].value)}</div>
         </div>
       )}
@@ -116,7 +133,7 @@ export default function AdminOverviewPage() {
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [days, setDays] = useState<7 | 30 | 90>(30);
+  const [days, setDays] = useState<RangeDays>(30);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -146,12 +163,12 @@ export default function AdminOverviewPage() {
             <p className="text-sm text-slate-500">Activité, ventes et livraisons en un coup d&apos;œil.</p>
           </div>
           <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1">
-            {([7, 30, 90] as const).map((d) => (
-              <button key={d} onClick={() => setDays(d)}
-                className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
-                  days === d ? "bg-white text-ink shadow-sm" : "text-slate-500 hover:text-ink"
+            {RANGES.map((r) => (
+              <button key={r.d} onClick={() => setDays(r.d)}
+                className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition sm:px-3 sm:text-sm ${
+                  days === r.d ? "bg-white text-ink shadow-sm" : "text-slate-500 hover:text-ink"
                 }`}>
-                {d} j
+                {r.label}
               </button>
             ))}
           </div>
@@ -175,16 +192,16 @@ export default function AdminOverviewPage() {
             {/* Évolution 30 jours — 2 graphes (jamais de double axe) */}
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
-                <p className="font-display text-sm font-bold text-ink">Chiffre d&apos;affaires · {days} j</p>
-                <p className="mb-3 text-xs text-slate-400">Paiements validés par jour</p>
-                <TrendChart kind="area" colorClass="text-cmr-green"
+                <p className="font-display text-sm font-bold text-ink">Chiffre d&apos;affaires · {periodLabel(days)}</p>
+                <p className="mb-3 text-xs text-slate-400">Paiements validés par {data.granularity === "month" ? "mois" : "jour"}</p>
+                <TrendChart kind="area" colorClass="text-cmr-green" granularity={data.granularity}
                   data={data.timeseries.map((d) => ({ date: d.date, value: d.revenue }))}
                   format={(v) => `${formatPrice(v)}`} />
               </div>
               <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
-                <p className="font-display text-sm font-bold text-ink">Commandes · {days} j</p>
-                <p className="mb-3 text-xs text-slate-400">Nombre de commandes par jour</p>
-                <TrendChart kind="bars" colorClass="text-brand-500"
+                <p className="font-display text-sm font-bold text-ink">Commandes · {periodLabel(days)}</p>
+                <p className="mb-3 text-xs text-slate-400">Nombre de commandes par {data.granularity === "month" ? "mois" : "jour"}</p>
+                <TrendChart kind="bars" colorClass="text-brand-500" granularity={data.granularity}
                   data={data.timeseries.map((d) => ({ date: d.date, value: d.orders }))}
                   format={(v) => `${v} commande${v > 1 ? "s" : ""}`} />
               </div>

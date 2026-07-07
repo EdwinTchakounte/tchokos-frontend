@@ -12,6 +12,7 @@ export type Overview = {
     payments_en_attente: number;
   };
   days: number;
+  granularity: "day" | "month";
   orders_by_status: Record<string, number>;
   status_labels: Record<string, string>;
   timeseries: { date: string; orders: number; revenue: number }[];
