@@ -11,6 +11,7 @@ export type Overview = {
     payments_valides: number;
     payments_en_attente: number;
   };
+  days: number;
   orders_by_status: Record<string, number>;
   status_labels: Record<string, string>;
   timeseries: { date: string; orders: number; revenue: number }[];
@@ -23,8 +24,8 @@ export type Overview = {
   };
 };
 
-export async function getOverview(): Promise<Overview> {
-  const res = await authedFetch(`/api/admin/overview/`, { cache: "no-store" });
+export async function getOverview(days = 30): Promise<Overview> {
+  const res = await authedFetch(`/api/admin/overview/?days=${days}`, { cache: "no-store" });
   if (res.status === 401) throw new Error("unauthorized");
   if (res.status === 403) throw new Error("forbidden");
   if (!res.ok) throw new Error("Erreur de chargement du tableau de bord.");

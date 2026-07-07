@@ -116,11 +116,12 @@ export default function AdminOverviewPage() {
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [days, setDays] = useState<7 | 30 | 90>(30);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      setData(await getOverview());
+      setData(await getOverview(days));
       setError(null);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Erreur";
@@ -129,7 +130,7 @@ export default function AdminOverviewPage() {
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, days]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -144,9 +145,16 @@ export default function AdminOverviewPage() {
             <h1 className="font-display text-2xl font-extrabold text-ink">Vue d&apos;ensemble</h1>
             <p className="text-sm text-slate-500">Activité, ventes et livraisons en un coup d&apos;œil.</p>
           </div>
-          <button onClick={load} className="rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-500 hover:bg-slate-50">
-            Actualiser
-          </button>
+          <div className="flex items-center gap-1 rounded-xl bg-slate-100 p-1">
+            {([7, 30, 90] as const).map((d) => (
+              <button key={d} onClick={() => setDays(d)}
+                className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition ${
+                  days === d ? "bg-white text-ink shadow-sm" : "text-slate-500 hover:text-ink"
+                }`}>
+                {d} j
+              </button>
+            ))}
+          </div>
         </div>
 
         {loading && <p className="mt-10 text-center text-slate-400">Chargement…</p>}
@@ -167,14 +175,14 @@ export default function AdminOverviewPage() {
             {/* Évolution 30 jours — 2 graphes (jamais de double axe) */}
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
-                <p className="font-display text-sm font-bold text-ink">Chiffre d&apos;affaires · 30 j</p>
+                <p className="font-display text-sm font-bold text-ink">Chiffre d&apos;affaires · {days} j</p>
                 <p className="mb-3 text-xs text-slate-400">Paiements validés par jour</p>
                 <TrendChart kind="area" colorClass="text-cmr-green"
                   data={data.timeseries.map((d) => ({ date: d.date, value: d.revenue }))}
                   format={(v) => `${formatPrice(v)}`} />
               </div>
               <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-card">
-                <p className="font-display text-sm font-bold text-ink">Commandes · 30 j</p>
+                <p className="font-display text-sm font-bold text-ink">Commandes · {days} j</p>
                 <p className="mb-3 text-xs text-slate-400">Nombre de commandes par jour</p>
                 <TrendChart kind="bars" colorClass="text-brand-500"
                   data={data.timeseries.map((d) => ({ date: d.date, value: d.orders }))}
