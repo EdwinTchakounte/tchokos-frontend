@@ -112,13 +112,13 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
-        <div className="hidden grid-cols-[130px_1fr_110px_120px_110px_120px] gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
+        <div className="hidden grid-cols-[130px_1fr_110px_120px_110px_120px] gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
           <span>Référence</span><span>Client</span><span>Total</span><span>Paiement</span><span>Statut</span>
           <span className="text-right">Action</span>
         </div>
         {loading && <p className="px-4 py-14 text-center text-sm text-slate-400">Chargement…</p>}
         {!loading && rows.map((o) => (
-          <div key={o.id} className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid-cols-[130px_1fr_110px_120px_110px_120px]">
+          <div key={o.id} onClick={() => setOpenId(o.id)} className="grid cursor-pointer grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3.5 transition first:border-t-0 hover:bg-slate-50/70 md:grid-cols-[130px_1fr_110px_120px_110px_120px]">
             <span className="font-mono text-xs font-semibold text-ink">{o.reference}</span>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-ink">{o.customer_name}</p>
@@ -156,8 +156,8 @@ function StatCard({ label, value, tone = "slate" }: { label: string; value: stri
     slate: "text-ink", green: "text-cmr-green", amber: "text-amber-600", brand: "text-brand-600",
   };
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
-      <p className={`font-display text-lg font-extrabold sm:text-xl ${tones[tone]}`}>{value}</p>
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card transition hover:shadow-md">
+      <p className={`font-display text-xl font-extrabold sm:text-2xl ${tones[tone]}`}>{value}</p>
       <p className="text-xs text-slate-500">{label}</p>
     </div>
   );

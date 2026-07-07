@@ -122,14 +122,14 @@ function CoursesTab() {
         </select>
       </div>
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
-        <div className="hidden grid-cols-[130px_1fr_120px_130px_1fr] gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
+        <div className="hidden grid-cols-[130px_1fr_120px_130px_1fr] gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
           <span>Commande</span><span>Client</span><span>Zone</span><span>Statut</span><span>Livreur</span>
         </div>
         {loading && <p className="px-4 py-14 text-center text-sm text-slate-400">Chargement…</p>}
         {!loading && rows.map((d) => {
           const canAssign = d.status !== "completed" && d.status !== "cancelled";
           return (
-            <div key={d.id} className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid-cols-[130px_1fr_120px_130px_1fr]">
+            <div key={d.id} className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3.5 transition first:border-t-0 hover:bg-slate-50/70 md:grid-cols-[130px_1fr_120px_130px_1fr]">
               <span className="font-mono text-xs font-semibold text-ink">{d.order_reference}</span>
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-ink">{d.customer_name}</p>
@@ -218,7 +218,7 @@ function ZonesTab() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
-        <div className="hidden grid-cols-[1fr_140px_120px_120px] gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
+        <div className="hidden grid-cols-[1fr_140px_120px_120px] gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
           <span>Zone</span><span>Tarif (FCFA)</span><span>Délai (min)</span><span>Active</span>
         </div>
         {loading && <p className="px-4 py-14 text-center text-sm text-slate-400">Chargement…</p>}
@@ -252,7 +252,7 @@ function ZoneRow({ zone, onSaved }: { zone: AdminZone; onSaved: () => void }) {
   }
 
   return (
-    <div className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid-cols-[1fr_140px_120px_120px]">
+    <div className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3.5 transition first:border-t-0 hover:bg-slate-50/70 md:grid-cols-[1fr_140px_120px_120px]">
       <div>
         <p className="text-sm font-medium text-ink">{zone.name}</p>
         <p className="text-xs text-slate-400">{zone.city}</p>
@@ -334,12 +334,12 @@ function SettlementsTab() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
-        <div className="hidden grid-cols-[120px_1fr_140px_110px_120px] gap-2 border-b border-slate-100 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
+        <div className="hidden grid-cols-[120px_1fr_140px_110px_120px] gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400 md:grid">
           <span>Commande</span><span>Sens</span><span>Montant</span><span>Statut</span><span className="text-right">Action</span>
         </div>
         {loading && <p className="px-4 py-14 text-center text-sm text-slate-400">Chargement…</p>}
         {!loading && rows.map((s) => (
-          <div key={s.id} className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid-cols-[120px_1fr_140px_110px_120px]">
+          <div key={s.id} className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3.5 transition first:border-t-0 hover:bg-slate-50/70 md:grid-cols-[120px_1fr_140px_110px_120px]">
             <span className="font-mono text-xs font-semibold text-ink">{s.order_reference}</span>
             <div className="min-w-0">
               <p className="truncate text-sm text-ink">{s.direction_display}</p>
@@ -374,8 +374,8 @@ function SettlementsTab() {
 function SumCard({ label, value, tone = "slate" }: { label: string; value: string; tone?: "slate" | "amber" | "brand" }) {
   const tones: Record<string, string> = { slate: "text-ink", amber: "text-amber-600", brand: "text-brand-600" };
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
-      <p className={`font-display text-xl font-extrabold ${tones[tone]}`}>{value}</p>
+    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card transition hover:shadow-md">
+      <p className={`font-display text-xl font-extrabold sm:text-2xl ${tones[tone]}`}>{value}</p>
       <p className="text-xs text-slate-500">{label}</p>
     </div>
   );
