@@ -97,18 +97,58 @@ export type OrderPayload = {
   note?: string;
   zone_id?: number | null;
   items: OrderItemInput[];
+  // false = paiement Tara direct, sans livraison
+  with_delivery?: boolean;
 };
 
 export async function postOrder(payload: OrderPayload): Promise<OrderResponse> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  // Si un client est connecté, on joint son JWT pour rattacher la commande à son
+  // compte (→ « Mes commandes »). Lecture directe du storage pour éviter un cycle
+  // d'import avec ./auth (qui importe API_URL depuis ce module).
+  if (typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("tchokos_auth");
+      const access = raw ? (JSON.parse(raw).access as string | undefined) : undefined;
+      if (access) headers.Authorization = `Bearer ${access}`;
+    } catch {
+      /* ignore */
+    }
+  }
+
   const res = await fetch(`${API_URL}/api/orders/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
     throw new Error("Impossible d'enregistrer la commande.");
   }
   return res.json() as Promise<OrderResponse>;
+}
+
+/** Statut d'un paiement Tara — polling côté vitrine (pas de cache). */
+export async function getPaymentStatus(
+  reference: string,
+): Promise<import("./types").PaymentStatus> {
+  const res = await fetch(
+    `${API_URL}/api/payments/status/?ref=${encodeURIComponent(reference)}`,
+    { cache: "no-store", headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new Error("payment status unavailable");
+  return res.json();
+}
+
+/** DEV uniquement (DEBUG backend) — simule la confirmation Tara d'un paiement. */
+export async function devConfirmPayment(
+  reference: string,
+): Promise<import("./types").PaymentStatus> {
+  const res = await fetch(
+    `${API_URL}/api/payments/dev/${encodeURIComponent(reference)}/confirm/`,
+    { method: "POST", headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new Error("dev confirm failed");
+  return res.json();
 }
 
 export type ContactPayload = {

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "À propos",
   description:
     "L'histoire de Tchokos : une marque née de la résilience, au service de la mode camerounaise.",
+  alternates: { canonical: "/a-propos" },
 };
 
 export default async function AboutPage() {

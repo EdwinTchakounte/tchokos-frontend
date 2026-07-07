@@ -36,7 +36,15 @@
 
 @layer base {
   /* overflow-x: clip protège du débordement horizontal SANS créer de conteneur
-     de défilement (contrairement à hidden), donc position: sticky reste valide. */
+     de défilement (contrairement à hidden), donc position: sticky reste valide.
+     Appliqué à html ET body : un élément position:fixed hors-écran (ex. le drawer
+     mobile fermé du header, translate-x-full) échappe au clip de body et ne peut
+     être contenu que par le viewport, piloté par l'overflow de l'élément racine.
+     Sans le clip sur html, ce drawer étendait la largeur du document (+328px) et
+     repoussait le 4e onglet de la bottom-nav (Contact) hors de l'écran. */
+  html {
+    overflow-x: clip;
+  }
   body {
     max-width: 100%;
     overflow-x: clip;
@@ -70,7 +78,9 @@
 /* Masque le bouton WhatsApp flottant quand le menu mobile est ouvert
    (évite le doublon avec le CTA WhatsApp du menu) */
 body.menu-open .wa-float,
-body.menu-open .chat-float { opacity: 0; pointer-events: none; }
+body.menu-open .chat-float,
+body.drawer-open .wa-float,
+body.drawer-open .chat-float { opacity: 0; pointer-events: none; }
 
 /* ---------------------------------------------------------------------------
    Animations (entrées + micro-mouvements vivants)

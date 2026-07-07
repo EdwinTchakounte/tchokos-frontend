@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { AddToCartButton } from "./AddToCartButton";
+import { CardShareButton } from "./CardShareButton";
 import { Stars } from "./Stars";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -54,6 +55,15 @@ export function ProductCard({ product }: { product: Product }) {
               −{product.discount_percent}%
             </span>
           )}
+        </div>
+
+        {/* Partage (coin haut-droit) */}
+        <div className="absolute right-2 top-2">
+          <CardShareButton
+            slug={product.slug}
+            name={product.name}
+            price={formatPrice(product.price)}
+          />
         </div>
 
         {!product.in_stock && (

@@ -16,6 +16,8 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  // Build autonome pour Docker : génère `.next/standalone` (serveur Node minimal).
+  output: "standalone",
   images: {
     remotePatterns: [
       // Images distantes de démo (catalogue)
@@ -26,6 +28,8 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "localhost", port: "8000", pathname: "/media/**" },
       { protocol: "http", hostname: "127.0.0.1", port: "8000", pathname: "/media/**" },
       { protocol: "http", hostname: "127.0.0.1", port: "8010", pathname: "/media/**" },
+      // IP LAN (test mobile) : autorise les images media servies via l'IP réseau
+      { protocol: "http", hostname: "10.137.226.210", port: "8010", pathname: "/media/**" },
     ],
   },
 };

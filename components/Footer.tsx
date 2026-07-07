@@ -47,7 +47,7 @@ export function Footer({ config, categories }: Props) {
             <li><Link href="/services" className="hover:text-brand-400">Nos services</Link></li>
             <li><Link href="/boutique" className="hover:text-brand-400">Tous les produits</Link></li>
             <li><Link href="/contact" className="hover:text-brand-400">Contact</Link></li>
-            <li><Link href="/vendeur" className="hover:text-brand-400">Espace vendeur</Link></li>
+            <li><Link href="/connexion" className="hover:text-brand-400">Connexion / Mon compte</Link></li>
             <li><Link href="/livreur" className="hover:text-brand-400">Espace livreur</Link></li>
           </ul>
         </FooterSection>

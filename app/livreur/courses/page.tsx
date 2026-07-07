@@ -6,16 +6,16 @@ import {
   acceptDelivery,
   completeDelivery,
   fetchDashboard,
-  getSession,
-  logout,
   setAvailability,
   type CourierDelivery,
   type CourierDashboard,
 } from "@/lib/courier";
+import { useAuth } from "@/lib/auth-context";
 import { formatPrice } from "@/lib/format";
 
 export default function CourierDashboardPage() {
   const router = useRouter();
+  const { ready, isCourier, logout } = useAuth();
   const [data, setData] = useState<CourierDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(() => Date.now());
@@ -27,9 +27,8 @@ export default function CourierDashboardPage() {
       setData(d);
       setAvailable(d.profile.is_available);
     } catch (err) {
-      if (err instanceof Error && err.message === "unauthorized") {
-        logout();
-        router.replace("/livreur");
+      if (err instanceof Error && (err.message === "unauthorized" || err.message === "forbidden")) {
+        router.replace("/connexion?next=/livreur/courses");
       }
     } finally {
       setLoading(false);
@@ -37,12 +36,13 @@ export default function CourierDashboardPage() {
   }, [router]);
 
   useEffect(() => {
-    if (!getSession()) {
-      router.replace("/livreur");
+    if (!ready) return;
+    if (!isCourier) {
+      router.replace("/connexion?next=/livreur/courses");
       return;
     }
     load();
-  }, [router, load]);
+  }, [ready, isCourier, router, load]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
@@ -55,12 +55,12 @@ export default function CourierDashboardPage() {
     await setAvailability(next).catch(() => setAvailable(!next));
   }
 
-  function handleLogout() {
-    logout();
-    router.replace("/livreur");
+  async function handleLogout() {
+    await logout();
+    router.replace("/connexion");
   }
 
-  if (loading) {
+  if (!ready || loading) {
     return <div className="container-tchokos py-20 text-center text-slate-400">Chargement…</div>;
   }
   if (!data) return null;

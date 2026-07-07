@@ -92,4 +92,17 @@ export type OrderResponse = {
   whatsapp_link: string;
   payment_link: string;
   payment_is_stub: boolean;
+  // Paiement Tara (canal sans livraison) : statut initial + URL hébergée (Wave).
+  payment_status: "en_attente" | "valide" | "rejete" | null;
+  payment_url: string | null;
+  tracking_url?: string;
+  tracking_token?: string;
+};
+
+export type PaymentStatus = {
+  reference: string;
+  montant: string;
+  statut: "en_attente" | "valide" | "rejete";
+  is_paid: boolean;
+  motif_rejet: string;
 };

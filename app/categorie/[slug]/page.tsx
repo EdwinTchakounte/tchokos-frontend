@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCategories, getProducts } from "@/lib/api";
+import { absoluteUrl } from "@/lib/site";
 import { ProductGrid } from "@/components/ProductGrid";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -10,9 +11,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const categories = await getCategories().catch(() => []);
   const cat = categories.find((c) => c.slug === slug);
+  const canonical = `/categorie/${slug}`;
   return {
     title: cat ? cat.name : "Catégorie",
     description: cat?.description || undefined,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title: cat ? cat.name : "Catégorie",
+      description: cat?.description || undefined,
+      url: absoluteUrl(canonical),
+      images: cat?.image ? [{ url: cat.image }] : undefined,
+    },
   };
 }
 
@@ -26,8 +36,29 @@ export default async function CategoryPage({ params }: Props) {
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: absoluteUrl("/") },
+      { "@type": "ListItem", position: 2, name: "Boutique", item: absoluteUrl("/boutique") },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: category.name,
+        item: absoluteUrl(`/categorie/${category.slug}`),
+      },
+    ],
+  };
+
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Bannière catégorie */}
       <section className="relative overflow-hidden bg-ink">
         {category.image && (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getSiteConfig, getCategories, getProducts } from "@/lib/api";
@@ -6,6 +7,12 @@ import { Services } from "@/components/Services";
 import { SectionHeading } from "@/components/SectionHeading";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductGrid } from "@/components/ProductGrid";
+
+export const metadata: Metadata = {
+  // L'accueil réutilise le titre par défaut du layout ; on fixe surtout son
+  // URL canonique pour éviter toute ambiguïté d'indexation (/, ?utm=…, etc.).
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const [config, categories, featured, promos] = await Promise.all([

@@ -1,4 +1,6 @@
+// Client de l'espace livreur — auth unifiée (JWT via lib/auth).
 import { API_URL } from "./api";
+import { authedFetch, setSession, type AuthUser } from "./auth";
 
 export type CourierDeliveryItem = {
   product_name: string;
@@ -50,67 +52,29 @@ export type CourierStats = {
 
 export type CourierZone = { id: number; name: string; fee: string };
 
-export type CourierSession = { token: string; courier: CourierProfile };
-
-const KEY = "tchokos_courier_session";
-
-export function getSession(): CourierSession | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as CourierSession) : null;
-  } catch {
-    return null;
-  }
-}
-
-function saveSession(s: CourierSession) {
-  localStorage.setItem(KEY, JSON.stringify(s));
-}
-
-export function logout() {
-  localStorage.removeItem(KEY);
-}
-
-function authHeaders(): HeadersInit {
-  const s = getSession();
-  return s ? { Authorization: `Bearer ${s.token}` } : {};
-}
-
-async function post(path: string, body: unknown) {
-  const res = await fetch(`${API_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.detail || "Erreur.");
-  return data;
-}
-
 export async function getZones(): Promise<CourierZone[]> {
   const res = await fetch(`${API_URL}/api/courier/zones/`, { cache: "no-store" });
   return res.ok ? res.json() : [];
 }
 
+/** Inscription livreur : crée le compte (email+mdp) + le profil, et ouvre la session. */
 export async function registerCourier(payload: {
   name: string;
+  email: string;
+  password: string;
   phone: string;
   vehicle: string;
   zone_ids: number[];
-}): Promise<void> {
-  await post("/api/courier/register/", payload);
-}
-
-export async function requestOtp(phone: string): Promise<{ demo_code: string; ttl_minutes: number }> {
-  return post("/api/courier/request-otp/", { phone });
-}
-
-export async function verifyOtp(phone: string, code: string): Promise<CourierSession> {
-  const data = await post("/api/courier/verify-otp/", { phone, code });
-  const session = { token: data.token, courier: data.courier } as CourierSession;
-  saveSession(session);
-  return session;
+}): Promise<AuthUser> {
+  const res = await fetch(`${API_URL}/api/courier/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "Inscription impossible.");
+  setSession({ access: data.access, refresh: data.refresh, user: data.user });
+  return data.user as AuthUser;
 }
 
 export type CourierDashboard = {
@@ -120,19 +84,17 @@ export type CourierDashboard = {
 };
 
 export async function fetchDashboard(): Promise<CourierDashboard> {
-  const res = await fetch(`${API_URL}/api/courier/deliveries/`, {
-    headers: authHeaders(),
-    cache: "no-store",
-  });
+  const res = await authedFetch("/api/courier/deliveries/", { cache: "no-store" });
   if (res.status === 401) throw new Error("unauthorized");
+  if (res.status === 403) throw new Error("forbidden");
   if (!res.ok) throw new Error("Erreur de chargement.");
   return res.json();
 }
 
 export async function setAvailability(is_available: boolean): Promise<boolean> {
-  const res = await fetch(`${API_URL}/api/courier/availability/`, {
+  const res = await authedFetch("/api/courier/availability/", {
     method: "POST",
-    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ is_available }),
   });
   const data = await res.json().catch(() => ({}));
@@ -140,19 +102,16 @@ export async function setAvailability(is_available: boolean): Promise<boolean> {
 }
 
 export async function acceptDelivery(id: number): Promise<string> {
-  const res = await fetch(`${API_URL}/api/courier/deliveries/${id}/accept/`, {
-    method: "POST",
-    headers: authHeaders(),
-  });
+  const res = await authedFetch(`/api/courier/deliveries/${id}/accept/`, { method: "POST" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.detail || "Acceptation impossible.");
   return data.code as string;
 }
 
 export async function completeDelivery(id: number, code: string): Promise<void> {
-  const res = await fetch(`${API_URL}/api/courier/deliveries/${id}/complete/`, {
+  const res = await authedFetch(`/api/courier/deliveries/${id}/complete/`, {
     method: "POST",
-    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code }),
   });
   if (!res.ok) {

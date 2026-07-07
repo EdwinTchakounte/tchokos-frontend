@@ -34,7 +34,10 @@ export function ChatBot() {
       const res = await fetch(`${API_URL}/api/chat/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.filter((m) => m !== GREETING) }),
+        body: JSON.stringify({
+          locale: typeof document !== "undefined" ? document.documentElement.lang || "fr" : "fr",
+          messages: next.filter((m) => m !== GREETING),
+        }),
       });
       const data = await res.json();
       setMessages((m) => [...m, { role: "assistant", content: data.reply || "…" }]);
@@ -54,7 +57,7 @@ export function ChatBot() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-label="Assistant Tchokos"
-        className="chat-float fixed bottom-20 left-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/30 transition hover:bg-brand-700 active:scale-90 md:bottom-5 md:left-5"
+        className="chat-float fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] left-4 z-40 grid h-12 w-12 place-items-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-600/30 transition hover:bg-brand-700 active:scale-90 md:bottom-5 md:left-5"
       >
         {open ? (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>

@@ -1,0 +1,17 @@
+# Secrets / VCS
+.env
+.env.*
+.git
+.github
+
+# Build & deps (reconstruits dans l'image)
+node_modules
+.next
+out
+
+# Divers
+npm-debug.log*
+.DS_Store
+.vscode
+.idea
+coverage

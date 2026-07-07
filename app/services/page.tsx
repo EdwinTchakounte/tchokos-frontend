@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Nos services",
   description:
     "Tous les services Tchokos : chaussures gros & détail, vêtements, sacs, montres & bijoux, commande WhatsApp, paiement Mobile Money, livraison à Douala et expédition Yaoundé.",
+  alternates: { canonical: "/services" },
 };
 
 type Service = {

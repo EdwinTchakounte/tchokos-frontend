@@ -6,6 +6,7 @@ import { whatsappLink } from "@/lib/format";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contactez Tchokos : WhatsApp, téléphone, adresse à Akwa, Douala.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {

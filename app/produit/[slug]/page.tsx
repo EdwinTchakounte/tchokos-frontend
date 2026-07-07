@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getProduct, getProducts } from "@/lib/api";
+import { absoluteUrl, BRAND } from "@/lib/site";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductPurchase } from "@/components/ProductPurchase";
+import { ShareButton } from "@/components/ShareButton";
 import { ProductGrid } from "@/components/ProductGrid";
 import { ProductReviews } from "@/components/ProductReviews";
 import { SectionHeading } from "@/components/SectionHeading";
@@ -15,14 +17,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) return { title: "Produit introuvable" };
+  const description =
+    product.description?.slice(0, 160) ||
+    `${product.name} — ${formatPrice(product.price)} chez Tchokos.`;
+  const canonical = `/produit/${product.slug}`;
+  // NB : l'image d'aperçu (og:image / twitter:image) est produite par
+  // `opengraph-image.tsx` (carte brandée photo+prix+logo) — ne pas la déclarer
+  // ici, sinon Facebook reçoit deux <meta og:image> concurrents.
   return {
     title: product.name,
-    description:
-      product.description?.slice(0, 160) ||
-      `${product.name} — ${formatPrice(product.price)} chez Tchokos.`,
+    description,
+    alternates: { canonical },
     openGraph: {
+      type: "website",
       title: product.name,
-      images: product.image ? [{ url: product.image }] : undefined,
+      description,
+      url: absoluteUrl(canonical),
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description,
     },
   };
 }
@@ -37,8 +52,73 @@ export default async function ProductPage({ params }: Props) {
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
+  const productUrl = absoluteUrl(`/produit/${product.slug}`);
+  const images = product.images?.length
+    ? product.images.map((img) => img.image)
+    : product.image
+      ? [product.image]
+      : [];
+
+  // Données structurées produit — permet les « rich results » Google (prix,
+  // dispo, note). Le prix est un décimal sérialisé côté API ("15000.00").
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    ...(product.description ? { description: product.description } : {}),
+    ...(images.length ? { image: images } : {}),
+    ...(product.brand ? { brand: { "@type": "Brand", name: product.brand } } : {}),
+    ...(product.sku ? { sku: product.sku } : {}),
+    category: product.category_name,
+    offers: {
+      "@type": "Offer",
+      url: productUrl,
+      priceCurrency: "XAF",
+      price: product.price,
+      availability: product.in_stock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      seller: { "@type": "Organization", name: BRAND.name },
+    },
+    ...(product.rating_count > 0
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: product.rating_avg,
+            reviewCount: product.rating_count,
+          },
+        }
+      : {}),
+  };
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Accueil", item: absoluteUrl("/") },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.category_name,
+        item: absoluteUrl(`/categorie/${product.category_slug}`),
+      },
+      { "@type": "ListItem", position: 3, name: product.name, item: productUrl },
+    ],
+  };
+
   return (
     <div className="container-tchokos py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       <nav className="mb-6 text-sm text-slate-400">
         <a href="/" className="hover:text-brand-600">Accueil</a> /{" "}
         <a href={`/categorie/${product.category_slug}`} className="hover:text-brand-600">
@@ -117,6 +197,15 @@ export default async function ProductPage({ params }: Props) {
 
           <div className="mt-7 rounded-2xl border border-slate-100 p-5 shadow-card">
             <ProductPurchase product={product} />
+          </div>
+
+          {/* Partage réseaux sociaux (l'aperçu Facebook/WhatsApp = carte brandée) */}
+          <div className="mt-4">
+            <ShareButton
+              url={productUrl}
+              name={product.name}
+              price={formatPrice(product.price)}
+            />
           </div>
 
           {/* Réassurance */}

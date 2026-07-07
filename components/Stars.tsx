@@ -1,6 +1,9 @@
+import { useId } from "react";
+
 function Star({ fill }: { fill: number }) {
   // fill: 0 → vide, 1 → pleine, 0.5 → demie
-  const id = `s${Math.random().toString(36).slice(2)}`;
+  // useId() = identifiant stable SSR/client (évite le mismatch d'hydratation)
+  const id = useId();
   return (
     <svg viewBox="0 0 20 20" className="h-4 w-4" aria-hidden>
       <defs>

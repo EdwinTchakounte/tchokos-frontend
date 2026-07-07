@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import type { Category, SiteConfig } from "@/lib/types";
 import { whatsappLink } from "@/lib/format";
 import { useCart } from "@/lib/cart";
+import { useAuth } from "@/lib/auth-context";
 import { SearchBar } from "./SearchBar";
 
 type Props = {
@@ -24,6 +25,14 @@ export function Header({ config, categories }: Props) {
   const [open, setOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
   const { count, ready } = useCart();
+  const { user, isAdmin, isCourier } = useAuth();
+  const accountHref = !user
+    ? "/connexion"
+    : isAdmin
+      ? "/admin"
+      : isCourier
+        ? "/livreur/courses"
+        : "/compte";
   const wa = config?.whatsapp_number
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋, je souhaite des informations.")
     : null;
@@ -93,6 +102,17 @@ export function Header({ config, categories }: Props) {
         <SearchBar className="mx-4 hidden max-w-lg flex-1 md:block" />
 
         <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+          <Link
+            href={accountHref}
+            className="relative grid h-10 w-10 place-items-center rounded-xl hover:bg-slate-100"
+            aria-label={user ? "Mon espace" : "Connexion"}
+            title={user ? user.full_name || user.email : "Connexion"}
+          >
+            <PersonIcon />
+            {user && (
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-cmr-green ring-2 ring-white" />
+            )}
+          </Link>
           <Link href="/panier" className="relative grid h-10 w-10 place-items-center rounded-xl hover:bg-slate-100" aria-label="Panier">
             <CartIcon />
             {ready && count > 0 && (
@@ -214,6 +234,15 @@ function NavIcon({ name }: { name: string }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d={p[name] ?? p.info} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function PersonIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9">
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20a7 7 0 0114 0" strokeLinecap="round" />
     </svg>
   );
 }

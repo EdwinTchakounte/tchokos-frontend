@@ -6,6 +6,7 @@ import { BoutiqueControls } from "@/components/BoutiqueControls";
 export const metadata: Metadata = {
   title: "Boutique",
   description: "Toutes les chaussures et vêtements Tchokos. Filtrez, triez, commandez via WhatsApp.",
+  alternates: { canonical: "/boutique" },
 };
 
 type Props = {
