@@ -92,6 +92,7 @@ export type OrderItemInput = {
 export type OrderPayload = {
   customer_name: string;
   phone: string;
+  email: string;
   city?: string;
   address?: string;
   note?: string;

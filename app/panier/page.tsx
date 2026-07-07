@@ -28,7 +28,7 @@ export default function CartPage() {
   const [zones, setZones] = useState<DeliveryZone[]>([]);
   const [zonesStatus, setZonesStatus] = useState<"loading" | "ready" | "error">("loading");
   const [zoneId, setZoneId] = useState<number | null>(null);
-  const [form, setForm] = useState({ name: "", phone: "", note: "" });
+  const [form, setForm] = useState({ name: "", phone: "", email: "", note: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pay, setPay] = useState<PayState | null>(null);
@@ -85,6 +85,7 @@ export default function CartPage() {
       const res = await postOrder({
         customer_name: form.name,
         phone: form.phone,
+        email: form.email,
         note: form.note,
         zone_id: zoneId,
         items: items.map((it) => ({ product_id: it.id, quantity: it.quantity, size: it.size })),
@@ -123,8 +124,8 @@ export default function CartPage() {
   // Paiement Mobile Money (Tara) DIRECT, sans livraison.
   async function handlePayNow() {
     setError(null);
-    if (!form.name.trim() || !form.phone.trim()) {
-      setError("Renseignez votre nom et téléphone pour payer.");
+    if (!form.name.trim() || !form.phone.trim() || !form.email.trim()) {
+      setError("Renseignez votre nom, téléphone et email pour payer.");
       return;
     }
     setLoading(true);
@@ -132,6 +133,7 @@ export default function CartPage() {
       const res = await postOrder({
         customer_name: form.name,
         phone: form.phone,
+        email: form.email,
         note: form.note,
         with_delivery: false,
         items: items.map((it) => ({ product_id: it.id, quantity: it.quantity, size: it.size })),
@@ -273,6 +275,8 @@ export default function CartPage() {
             <input required value={form.name} onChange={update("name")} placeholder="Votre nom *"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
             <input required value={form.phone} onChange={update("phone")} placeholder="Téléphone *" inputMode="tel"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
+            <input required type="email" value={form.email} onChange={update("email")} placeholder="Email *" inputMode="email"
               className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none" />
             <DeliveryZonePicker
               zones={zones}
