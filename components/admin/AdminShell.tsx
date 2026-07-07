@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 
 const NAV = [
+  { href: "/admin/apercu", label: "Vue d'ensemble", icon: "📊" },
   { href: "/admin", label: "Produits", icon: "📦" },
   { href: "/admin/commandes", label: "Commandes", icon: "🧾" },
   { href: "/admin/paiements", label: "Paiements", icon: "💳" },
