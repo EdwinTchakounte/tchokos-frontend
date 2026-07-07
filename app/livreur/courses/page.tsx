@@ -232,11 +232,9 @@ function DeliveryCard({ d, now, onChange, mode }: { d: CourierDelivery; now: num
       )}
       {mode === "complete" && (
         <form onSubmit={handleComplete} className="mt-3 space-y-2">
-          {d.code && (
-            <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
-              Code envoyé au client par SMS. <span className="opacity-70">(démo : {d.code})</span>
-            </p>
-          )}
+          <p className="rounded-lg bg-sky-50 px-3 py-2 text-xs text-sky-800">
+            Le code a été envoyé au client. Demandez-le lui à la réception du colis.
+          </p>
           <p className="text-sm font-medium text-ink">Saisissez le code remis par le client :</p>
           <div className="flex gap-2">
             <input value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" placeholder="6 chiffres" className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-center text-lg tracking-widest focus:border-brand-500 focus:outline-none" />

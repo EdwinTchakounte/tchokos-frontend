@@ -13,7 +13,9 @@ export type CourierDelivery = {
   id: number;
   status: "pending" | "assigned" | "accepted" | "completed" | "expired" | "cancelled";
   status_display: string;
-  code: string;
+  // Le code n'est jamais transmis au livreur (envoyé au client). On sait juste
+  // s'il est parti.
+  code_sent: boolean;
   acceptance_deadline: string | null;
   remaining_seconds: number | null;
   is_overdue: boolean;
@@ -101,11 +103,10 @@ export async function setAvailability(is_available: boolean): Promise<boolean> {
   return Boolean(data.is_available);
 }
 
-export async function acceptDelivery(id: number): Promise<string> {
+export async function acceptDelivery(id: number): Promise<void> {
   const res = await authedFetch(`/api/courier/deliveries/${id}/accept/`, { method: "POST" });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.detail || "Acceptation impossible.");
-  return data.code as string;
 }
 
 export async function completeDelivery(id: number, code: string): Promise<void> {
