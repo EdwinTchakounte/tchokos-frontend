@@ -272,6 +272,23 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
               )}
             </section>
 
+            {order.delivery && (
+              <section>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Livraison</p>
+                <div className="space-y-1 rounded-lg bg-slate-50 p-3 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Statut</span>
+                    <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-ink">{order.delivery.status_display}</span>
+                  </div>
+                  {order.delivery.zone && (
+                    <div className="flex justify-between"><span className="text-slate-500">Zone</span><span className="font-medium text-ink">{order.delivery.zone}</span></div>
+                  )}
+                  <div className="flex justify-between"><span className="text-slate-500">Livreur</span><span className="font-medium text-ink">{order.delivery.courier || "Non assigné"}</span></div>
+                  {order.delivery.code_sent && <p className="text-[11px] text-cmr-green">✓ Code de livraison envoyé au client</p>}
+                </div>
+              </section>
+            )}
+
             <section>
               <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Statut de la commande</p>
               <div className="flex gap-2">

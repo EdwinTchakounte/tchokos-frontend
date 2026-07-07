@@ -69,6 +69,13 @@ export type AdminOrderDetail = {
   whatsapp_link: string;
   tracking_token: string;
   sendo_status: string;
+  delivery: {
+    status: string;
+    status_display: string;
+    zone: string;
+    courier: string;
+    code_sent: boolean;
+  } | null;
 };
 
 export type SalesStats = {
