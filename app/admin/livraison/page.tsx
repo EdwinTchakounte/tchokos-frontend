@@ -11,6 +11,9 @@ import {
   getZones,
   createZone,
   updateZone,
+  createCourier,
+  updateCourier,
+  deleteCourier,
   getSettlements,
   settleSettlement,
   type AdminDelivery,
@@ -18,9 +21,10 @@ import {
   type AdminZone,
   type AdminSettlement,
   type SettlementSummary,
+  type CourierInput,
 } from "@/lib/admin-delivery";
 
-type Tab = "courses" | "zones" | "decaissements";
+type Tab = "courses" | "livreurs" | "zones" | "decaissements";
 
 const DELIVERY_STATUS_STYLES: Record<string, string> = {
   pending: "bg-slate-100 text-slate-600",
@@ -42,14 +46,165 @@ export default function AdminDeliveryPage() {
 
       <div className="mb-5 flex gap-1 rounded-xl bg-slate-100 p-1 text-sm font-semibold">
         <TabBtn active={tab === "courses"} onClick={() => setTab("courses")}>🛵 Courses</TabBtn>
+        <TabBtn active={tab === "livreurs"} onClick={() => setTab("livreurs")}>🧍 Livreurs</TabBtn>
         <TabBtn active={tab === "zones"} onClick={() => setTab("zones")}>📍 Zones & tarifs</TabBtn>
         <TabBtn active={tab === "decaissements"} onClick={() => setTab("decaissements")}>💰 Décaissements</TabBtn>
       </div>
 
       {tab === "courses" && <CoursesTab />}
+      {tab === "livreurs" && <LivreursTab />}
       {tab === "zones" && <ZonesTab />}
       {tab === "decaissements" && <SettlementsTab />}
     </AdminShell>
+  );
+}
+
+function LivreursTab() {
+  const router = useRouter();
+  const [couriers, setCouriers] = useState<AdminCourier[]>([]);
+  const [zones, setZones] = useState<AdminZone[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<AdminCourier | "new" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [cs, zs] = await Promise.all([getCouriers(), getZones()]);
+      setCouriers(cs);
+      setZones(zs);
+      setError(null);
+    } catch (e) {
+      const m = e instanceof Error ? e.message : "";
+      if (m === "unauthorized" || m === "forbidden") { router.replace("/connexion?next=/admin/livraison"); return; }
+      setError("Chargement impossible.");
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
+  useEffect(() => { load(); }, [load]);
+
+  async function toggle(c: AdminCourier, field: "is_active" | "is_available") {
+    try { await updateCourier(c.id, { [field]: !c[field] }); load(); } catch { /* ignore */ }
+  }
+  async function remove(c: AdminCourier) {
+    if (!confirm(`Supprimer / désactiver ${c.name} ?`)) return;
+    try { await deleteCourier(c.id); load(); } catch (e) { setError(e instanceof Error ? e.message : "Erreur"); }
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <p className="text-sm text-slate-500">{couriers.length} livreur(s)</p>
+        <button onClick={() => setEditing("new")} className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700">+ Ajouter un livreur</button>
+      </div>
+      {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
+      {loading ? (
+        <p className="py-10 text-center text-slate-400">Chargement…</p>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {couriers.map((c) => (
+            <div key={c.id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-card">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-display font-bold text-ink">{c.name}</p>
+                  <p className="truncate text-xs text-slate-500">{c.phone}{c.email ? ` · ${c.email}` : ""}</p>
+                  <p className="text-xs text-slate-400">{c.vehicle} · {c.city}</p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1">
+                  <button onClick={() => toggle(c, "is_active")} className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${c.is_active ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>{c.is_active ? "Actif" : "Inactif"}</button>
+                  <button onClick={() => toggle(c, "is_available")} className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${c.is_available ? "bg-sky-100 text-sky-700" : "bg-slate-100 text-slate-500"}`}>{c.is_available ? "Disponible" : "Indispo"}</button>
+                </div>
+              </div>
+              {c.zones.length > 0 && <p className="mt-2 text-xs text-slate-500">Zones : {c.zones.join(", ")}</p>}
+              {c.latitude != null && c.longitude != null && <p className="text-[11px] text-slate-400">📍 {c.latitude.toFixed(4)}, {c.longitude.toFixed(4)}</p>}
+              <div className="mt-3 flex gap-2">
+                <button onClick={() => setEditing(c)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Éditer</button>
+                <button onClick={() => remove(c)} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50">Supprimer</button>
+              </div>
+            </div>
+          ))}
+          {couriers.length === 0 && <p className="col-span-full py-10 text-center text-slate-400">Aucun livreur. Ajoutez-en un.</p>}
+        </div>
+      )}
+      {editing && (
+        <CourierEditor
+          courier={editing === "new" ? null : editing}
+          zones={zones}
+          onClose={() => setEditing(null)}
+          onSaved={() => { setEditing(null); load(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function CourierEditor({ courier, zones, onClose, onSaved }: { courier: AdminCourier | null; zones: AdminZone[]; onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState<CourierInput>({
+    name: courier?.name ?? "", phone: courier?.phone ?? "", email: courier?.email ?? "",
+    city: courier?.city ?? "Douala", vehicle: courier?.vehicle ?? "Moto",
+    is_active: courier?.is_active ?? true, is_available: courier?.is_available ?? true,
+    latitude: courier?.latitude ?? null, longitude: courier?.longitude ?? null,
+    zone_ids: courier?.zone_ids ?? [],
+  });
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  function set<K extends keyof CourierInput>(k: K, v: CourierInput[K]) { setForm((f) => ({ ...f, [k]: v })); }
+  function toggleZone(id: number) {
+    const ids = form.zone_ids ?? [];
+    set("zone_ids", ids.includes(id) ? ids.filter((z) => z !== id) : [...ids, id]);
+  }
+  const num = (v: string) => (v === "" ? null : Number(v));
+  async function save() {
+    if (!form.name.trim() || !form.phone.trim()) { setErr("Nom et téléphone obligatoires."); return; }
+    if (!courier && !form.email?.trim()) { setErr("Email obligatoire pour créer le compte livreur."); return; }
+    setBusy(true);
+    try {
+      if (courier) await updateCourier(courier.id, form);
+      else await createCourier(form);
+      onSaved();
+    } catch (e) { setErr(e instanceof Error ? e.message : "Erreur"); } finally { setBusy(false); }
+  }
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/30" onClick={onClose}>
+      <div className="h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-bold text-ink">{courier ? "Éditer le livreur" : "Nouveau livreur"}</h2>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100">✕</button>
+        </div>
+        <div className="mt-4 space-y-2.5 text-sm">
+          <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nom *" className="w-full rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+          <input value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="Téléphone *" inputMode="tel" className="w-full rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+          <input value={form.email ?? ""} onChange={(e) => set("email", e.target.value)} placeholder="Email * (compte livreur)" type="email" disabled={!!courier} className="w-full rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none disabled:bg-slate-50 disabled:text-slate-400" />
+          <div className="flex gap-2">
+            <input value={form.city ?? ""} onChange={(e) => set("city", e.target.value)} placeholder="Ville" className="w-1/2 rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+            <input value={form.vehicle ?? ""} onChange={(e) => set("vehicle", e.target.value)} placeholder="Véhicule" className="w-1/2 rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+          </div>
+          <div>
+            <p className="mb-1 text-xs font-semibold text-slate-500">Zones couvertes</p>
+            <div className="flex flex-wrap gap-1.5">
+              {zones.map((z) => {
+                const on = (form.zone_ids ?? []).includes(z.id);
+                return <button key={z.id} type="button" onClick={() => toggleZone(z.id)} className={`rounded-full px-2.5 py-1 text-xs font-medium ${on ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-600"}`}>{z.name}</button>;
+              })}
+              {zones.length === 0 && <span className="text-xs text-slate-400">Aucune zone — créez-en dans l&apos;onglet Zones.</span>}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <input value={form.latitude ?? ""} onChange={(e) => set("latitude", num(e.target.value))} placeholder="Latitude" inputMode="decimal" className="w-1/2 rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+            <input value={form.longitude ?? ""} onChange={(e) => set("longitude", num(e.target.value))} placeholder="Longitude" inputMode="decimal" className="w-1/2 rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
+          </div>
+          <p className="text-[11px] text-slate-400">Coordonnées : pour l&apos;assignation « le plus proche ». Optionnel.</p>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-2"><input type="checkbox" checked={!!form.is_active} onChange={(e) => set("is_active", e.target.checked)} /> Actif</label>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={!!form.is_available} onChange={(e) => set("is_available", e.target.checked)} /> Disponible</label>
+          </div>
+          {err && <p className="text-sm text-red-500">{err}</p>}
+          {!courier && <p className="text-[11px] text-slate-400">Un email d&apos;activation sera envoyé au livreur pour définir son mot de passe.</p>}
+          <button onClick={save} disabled={busy} className="mt-2 w-full rounded-full bg-cmr-green px-5 py-2.5 font-semibold text-white hover:bg-cmr-green-dark disabled:opacity-60">{busy ? "…" : courier ? "Enregistrer" : "Créer le livreur"}</button>
+        </div>
+      </div>
+    </div>
   );
 }
 

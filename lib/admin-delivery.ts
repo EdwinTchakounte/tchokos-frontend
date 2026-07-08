@@ -27,8 +27,14 @@ export type AdminCourier = {
   id: number;
   name: string;
   phone: string;
+  email: string;
+  city: string;
+  vehicle: string;
   is_active: boolean;
   is_available: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  zone_ids: number[];
   zones: string[];
 };
 
@@ -40,7 +46,52 @@ export type AdminZone = {
   eta_minutes: number;
   is_active: boolean;
   order: number;
+  latitude: number | null;
+  longitude: number | null;
 };
+
+export type CourierInput = {
+  name: string;
+  phone: string;
+  email?: string;
+  city?: string;
+  vehicle?: string;
+  is_active?: boolean;
+  is_available?: boolean;
+  latitude?: number | null;
+  longitude?: number | null;
+  zone_ids?: number[];
+};
+
+export async function createCourier(payload: CourierInput): Promise<AdminCourier> {
+  const res = await authedFetch(`/api/admin/couriers/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "Création impossible.");
+  return data as AdminCourier;
+}
+
+export async function updateCourier(id: number, patch: Partial<CourierInput>): Promise<AdminCourier> {
+  const res = await authedFetch(`/api/admin/couriers/${id}/`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || "Mise à jour impossible.");
+  return data as AdminCourier;
+}
+
+export async function deleteCourier(id: number): Promise<void> {
+  const res = await authedFetch(`/api/admin/couriers/${id}/`, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.detail || "Suppression impossible.");
+  }
+}
 
 export type AdminSettlement = {
   id: number;
