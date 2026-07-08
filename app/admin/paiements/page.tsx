@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { Pager } from "@/components/admin/Pager";
 import { formatPrice } from "@/lib/format";
 import {
   getPayments,
@@ -10,6 +11,8 @@ import {
   type AdminPayment,
   type SalesStats,
 } from "@/lib/admin-orders";
+
+const PAGE_SIZE = 25;
 
 const PAY_STYLES: Record<string, string> = {
   valide: "bg-green-100 text-green-700",
@@ -24,15 +27,18 @@ export default function AdminPaymentsPage() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [statutF, setStatutF] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [payRes, statsRes] = await Promise.all([
-        getPayments({ q: q || undefined, statut: statutF || undefined, limit: 100 }),
+        getPayments({ q: q || undefined, statut: statutF || undefined, limit: PAGE_SIZE, offset }),
         getSalesStats(),
       ]);
       setRows(payRes.results);
+      setCount(payRes.count);
       setStats(statsRes);
     } catch (err) {
       if (err instanceof Error && (err.message === "unauthorized" || err.message === "forbidden")) {
@@ -41,7 +47,7 @@ export default function AdminPaymentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [q, statutF, router]);
+  }, [q, statutF, offset, router]);
 
   useEffect(() => {
     const t = setTimeout(load, 250);
@@ -67,13 +73,13 @@ export default function AdminPaymentsPage() {
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => { setQ(e.target.value); setOffset(0); }}
           placeholder="Rechercher (réf commande, réf Tara, téléphone)…"
           className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none"
         />
         <select
           value={statutF}
-          onChange={(e) => setStatutF(e.target.value)}
+          onChange={(e) => { setStatutF(e.target.value); setOffset(0); }}
           className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none"
         >
           <option value="">Tous les statuts</option>
@@ -111,6 +117,15 @@ export default function AdminPaymentsPage() {
           <p className="px-4 py-14 text-center text-sm text-slate-400">Aucun paiement.</p>
         )}
       </div>
+
+      <Pager
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        shown={rows.length}
+        count={count}
+        onPrev={() => setOffset((o) => Math.max(o - PAGE_SIZE, 0))}
+        onNext={() => setOffset((o) => o + PAGE_SIZE)}
+      />
     </AdminShell>
   );
 }

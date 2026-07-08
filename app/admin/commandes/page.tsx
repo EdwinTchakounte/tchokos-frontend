@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { Pager } from "@/components/admin/Pager";
 import { formatPrice } from "@/lib/format";
 import {
   getOrders,
@@ -30,6 +31,8 @@ const PAY_STYLES: Record<string, string> = {
   rejete: "bg-red-100 text-red-600",
 };
 
+const PAGE_SIZE = 25;
+
 function PayBadge({ status }: { status: string | null }) {
   if (!status) return <span className="text-xs text-slate-300">—</span>;
   const label = status === "valide" ? "Payé" : status === "en_attente" ? "En attente" : "Rejeté";
@@ -47,16 +50,19 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [statusF, setStatusF] = useState("");
+  const [offset, setOffset] = useState(0);
+  const [count, setCount] = useState(0);
   const [openId, setOpenId] = useState<number | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const [ordersRes, statsRes] = await Promise.all([
-        getOrders({ q: q || undefined, status: statusF || undefined, limit: 100 }),
+        getOrders({ q: q || undefined, status: statusF || undefined, limit: PAGE_SIZE, offset }),
         getSalesStats(),
       ]);
       setRows(ordersRes.results);
+      setCount(ordersRes.count);
       setStats(statsRes);
     } catch (err) {
       if (err instanceof Error && (err.message === "unauthorized" || err.message === "forbidden")) {
@@ -65,7 +71,7 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, [q, statusF, router]);
+  }, [q, statusF, offset, router]);
 
   useEffect(() => {
     const t = setTimeout(load, 250);
@@ -92,13 +98,13 @@ export default function AdminOrdersPage() {
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
         <input
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => { setQ(e.target.value); setOffset(0); }}
           placeholder="Rechercher (réf, nom, téléphone)…"
           className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none"
         />
         <select
           value={statusF}
-          onChange={(e) => setStatusF(e.target.value)}
+          onChange={(e) => { setStatusF(e.target.value); setOffset(0); }}
           className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm focus:border-brand-500 focus:outline-none"
         >
           <option value="">Tous les statuts</option>
@@ -143,6 +149,15 @@ export default function AdminOrdersPage() {
           <p className="px-4 py-14 text-center text-sm text-slate-400">Aucune commande.</p>
         )}
       </div>
+
+      <Pager
+        offset={offset}
+        pageSize={PAGE_SIZE}
+        shown={rows.length}
+        count={count}
+        onPrev={() => setOffset((o) => Math.max(o - PAGE_SIZE, 0))}
+        onNext={() => setOffset((o) => o + PAGE_SIZE)}
+      />
 
       {openId != null && (
         <OrderDrawer id={openId} onClose={() => setOpenId(null)} onSaved={load} />
