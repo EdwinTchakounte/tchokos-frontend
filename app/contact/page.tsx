@@ -14,6 +14,9 @@ export default async function ContactPage() {
   const wa = config?.whatsapp_number
     ? whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋")
     : null;
+  const arrivages = config?.whatsapp_arrivages
+    ? whatsappLink(config.whatsapp_arrivages, "Bonjour, je veux rejoindre le groupe des nouveaux arrivages Tchokos.")
+    : null;
   const social = config?.social;
 
   return (
@@ -32,7 +35,7 @@ export default async function ContactPage() {
       </header>
 
       {/* Canaux rapides */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {wa && (
           <ChannelCard
             href={wa}
@@ -41,6 +44,16 @@ export default async function ContactPage() {
             icon="💬"
             label="WhatsApp"
             value="Réponse rapide"
+          />
+        )}
+        {arrivages && (
+          <ChannelCard
+            href={arrivages}
+            external
+            tone="amber"
+            icon="🔔"
+            label="Nouveaux arrivages"
+            value="Rejoindre le groupe"
           />
         )}
         {config?.phone && (
@@ -113,7 +126,7 @@ function ChannelCard({
 }: {
   href: string;
   external?: boolean;
-  tone: "green" | "brand" | "ink";
+  tone: "green" | "brand" | "ink" | "amber";
   icon: string;
   label: string;
   value: string;
@@ -122,6 +135,7 @@ function ChannelCard({
     green: "from-cmr-green/10 to-cmr-green/5 ring-cmr-green/20",
     brand: "from-brand-100 to-brand-50 ring-brand-200",
     ink: "from-slate-100 to-slate-50 ring-slate-200",
+    amber: "from-amber-100 to-amber-50 ring-amber-200",
   };
   return (
     <a

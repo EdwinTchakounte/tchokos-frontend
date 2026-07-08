@@ -59,6 +59,7 @@ export type SiteConfig = {
   site_name: string;
   tagline: string;
   whatsapp_number: string;
+  whatsapp_arrivages: string;
   phone: string;
   email: string;
   address: string;

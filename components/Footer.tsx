@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Category, SiteConfig } from "@/lib/types";
+import { whatsappLink } from "@/lib/format";
 import { FooterSection } from "./FooterSection";
 
 type Props = {
@@ -54,6 +55,30 @@ export function Footer({ config, categories }: Props) {
 
         <FooterSection title="Contact">
           <ul className="space-y-2 text-sm text-slate-400">
+            {config?.whatsapp_number && (
+              <li>
+                <a
+                  href={whatsappLink(config.whatsapp_number, "Bonjour Tchokos 👋, je veux commander.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-brand-400"
+                >
+                  💬 Commander sur WhatsApp
+                </a>
+              </li>
+            )}
+            {config?.whatsapp_arrivages && (
+              <li>
+                <a
+                  href={whatsappLink(config.whatsapp_arrivages, "Bonjour, je veux rejoindre le groupe des nouveaux arrivages Tchokos.")}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-brand-400"
+                >
+                  🔔 Groupe nouveaux arrivages
+                </a>
+              </li>
+            )}
             {config?.phone && <li>📞 {config.phone}</li>}
             {config?.email && (
               <li>

@@ -75,6 +75,7 @@ export type NewProduct = {
   compare_at_price?: number | "";
   description?: string;
   image_url?: string;
+  is_active?: boolean;
   is_featured?: boolean;
 };
 

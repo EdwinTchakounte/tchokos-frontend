@@ -50,7 +50,7 @@ export function CardShareButton({
       onClick={handleShare}
       aria-label={`Partager ${name}`}
       title="Partager"
-      className="grid h-9 w-9 place-items-center rounded-full bg-white/90 text-ink shadow-sm ring-1 ring-slate-200 backdrop-blur transition hover:bg-white hover:text-brand-600"
+      className="grid h-9 w-9 place-items-center rounded-full bg-white/95 text-ink shadow-md ring-1 ring-slate-200/70 backdrop-blur transition-all hover:scale-105 hover:text-brand-600 hover:shadow-lg active:scale-95"
     >
       {copied ? (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">

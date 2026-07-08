@@ -129,6 +129,7 @@ export function ProductDrawer({ open, product, categories, onClose, onSaved }: P
           sizes: payload.sizes,
           compare_at_price: payload.compare_at_price,
           description: payload.description,
+          is_active: payload.is_active,
           is_featured: payload.is_featured,
         });
         // Première photo éventuelle saisie pendant la création
