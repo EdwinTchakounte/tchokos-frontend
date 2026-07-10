@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Category } from "@/lib/types";
+import { SafeImage } from "./SafeImage";
 
 export function CategoryCard({ category }: { category: Category }) {
   return (
@@ -9,15 +9,13 @@ export function CategoryCard({ category }: { category: Category }) {
       className="group relative overflow-hidden rounded-2xl shadow-card"
     >
       <div className="relative aspect-[4/5] bg-slate-100">
-        {category.image && (
-          <Image
-            src={category.image}
-            alt={category.name}
-            fill
-            sizes="(max-width: 640px) 50vw, 20vw"
-            className="object-cover group-hover:scale-105 transition duration-300"
-          />
-        )}
+        <SafeImage
+          src={category.image}
+          alt={category.name}
+          fill
+          sizes="(max-width: 640px) 50vw, 20vw"
+          className="object-cover group-hover:scale-105 transition duration-300"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-ink/20 to-transparent" />
       </div>
       <div className="absolute bottom-0 left-0 right-0 p-3">

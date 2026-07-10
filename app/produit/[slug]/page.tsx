@@ -202,6 +202,7 @@ export default async function ProductPage({ params }: Props) {
           {/* Partage réseaux sociaux (l'aperçu Facebook/WhatsApp = carte brandée) */}
           <div className="mt-4">
             <ShareButton
+              slug={product.slug}
               url={productUrl}
               name={product.name}
               price={formatPrice(product.price)}

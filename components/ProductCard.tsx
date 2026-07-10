@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { formatPrice, BADGE_LABELS, BADGE_STYLES } from "@/lib/format";
 import { AddToCartButton } from "./AddToCartButton";
 import { CardShareButton } from "./CardShareButton";
+import { SafeImage } from "./SafeImage";
 import { Stars } from "./Stars";
 
 export function ProductCard({ product }: { product: Product }) {
@@ -13,31 +13,23 @@ export function ProductCard({ product }: { product: Product }) {
       className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-card ring-1 ring-slate-100 transition duration-200 hover:-translate-y-1 hover:shadow-xl hover:ring-brand-200"
     >
       <div className="relative aspect-square overflow-hidden bg-slate-100">
-        {product.image ? (
-          <>
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className={`object-cover transition duration-500 group-hover:scale-105 ${
-                product.hover_image ? "group-hover:opacity-0" : ""
-              }`}
-            />
-            {product.hover_image && (
-              <Image
-                src={product.hover_image}
-                alt=""
-                fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                className="object-cover opacity-0 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
-              />
-            )}
-          </>
-        ) : (
-          <div className="grid h-full place-items-center text-sm text-slate-300">
-            Pas d&apos;image
-          </div>
+        <SafeImage
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className={`object-cover transition duration-500 group-hover:scale-105 ${
+            product.hover_image ? "group-hover:opacity-0" : ""
+          }`}
+        />
+        {product.hover_image && (
+          <SafeImage
+            src={product.hover_image}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover opacity-0 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+          />
         )}
 
         {/* Dégradé bas pour la profondeur */}

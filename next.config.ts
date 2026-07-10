@@ -22,8 +22,14 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       // Images distantes de démo (catalogue)
       { protocol: "https", hostname: "images.unsplash.com" },
-      // Backend (photos téléversées dans /media)
+      // Backend (photos téléversées dans /media) — dérivé de NEXT_PUBLIC_API_URL
       ...(backendPattern ? [backendPattern] : []),
+      // Prod : photos auto-hébergées servies depuis le sous-domaine API (secours
+      // explicite si NEXT_PUBLIC_API_URL n'est pas défini au build).
+      { protocol: "https", hostname: "api.tchokos-sarl.com", pathname: "/media/**" },
+      { protocol: "https", hostname: "tchokos-sarl.com", pathname: "/media/**" },
+      // Visuels éventuels de la boutique officielle
+      { protocol: "https", hostname: "tchokos.shop" },
       // Tolérance dev : localhost sur les ports backend usuels
       { protocol: "http", hostname: "localhost", port: "8000", pathname: "/media/**" },
       { protocol: "http", hostname: "127.0.0.1", port: "8000", pathname: "/media/**" },

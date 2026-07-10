@@ -3,32 +3,80 @@
 import { useState } from "react";
 
 type Props = {
-  /** URL absolue de la fiche produit (celle dont l'aperçu = la carte brandée). */
+  /** Slug produit → URL stable du flyer PNG (/produit/[slug]/flyer). */
+  slug: string;
+  /** URL absolue de la fiche produit (celle dont l'aperçu = le flyer brandé). */
   url: string;
   name: string;
   /** Prix déjà formaté, ex. "12 500 FCFA". */
   price: string;
 };
 
-// Boutons de partage produit.
-// - Facebook : sharer.php prend l'URL → Facebook récupère automatiquement la
-//   carte brandée (opengraph-image.tsx) comme image de l'aperçu.
-// - WhatsApp : wa.me avec nom + prix + lien (WhatsApp affiche aussi l'aperçu).
-// - « Partager » : Web Share API natif sur mobile (ouvre FB/WA/Messenger…),
-//   avec repli « copier le lien » sur desktop sans Web Share.
-export function ShareButton({ url, name, price }: Props) {
+// Partage produit Tchokos.
+// - « Partager le flyer » : télécharge le flyer PNG brandé et le partage en
+//   FICHIER via l'API Web Share (status WhatsApp, groupe, post Facebook…).
+//   Repli desktop : téléchargement de l'image.
+// - Facebook / WhatsApp : partage du LIEN → la plateforme scrape le flyer
+//   (opengraph-image) comme aperçu.
+// - « Partager » : Web Share natif du lien, repli « copier le lien ».
+export function ShareButton({ slug, url, name, price }: Props) {
   const [copied, setCopied] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
 
   const text = `${name} — ${price}\n${url}`;
   const waHref = `https://wa.me/?text=${encodeURIComponent(text)}`;
   const fbHref = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+  const flyerUrl = `/produit/${slug}/flyer`;
+  const filename = `tchokos-${slug}.png`;
 
-  async function nativeShare() {
+  async function shareFlyer() {
+    if (busy) return;
+    setBusy(true);
+    setNote(null);
+    try {
+      const res = await fetch(flyerUrl);
+      if (!res.ok) throw new Error("gen");
+      const blob = await res.blob();
+      const file = new File([blob], filename, { type: "image/png" });
+      const canShareFiles =
+        typeof navigator !== "undefined" &&
+        typeof navigator.canShare === "function" &&
+        navigator.canShare({ files: [file] });
+
+      if (canShareFiles) {
+        try {
+          await navigator.share({ files: [file], title: name, text });
+        } catch {
+          /* l'utilisateur a annulé — rien à faire */
+        }
+      } else {
+        // Repli desktop : téléchargement de l'image.
+        const objectUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = objectUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(objectUrl);
+        setNote("Flyer téléchargé ✓ — partagez-le sur WhatsApp/Facebook");
+        setTimeout(() => setNote(null), 3000);
+      }
+    } catch {
+      setNote("Génération impossible, réessayez dans un instant.");
+      setTimeout(() => setNote(null), 3000);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function shareLink() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({ title: name, text: `${name} — ${price}`, url });
       } catch {
-        /* l'utilisateur a annulé — rien à faire */
+        /* annulé */
       }
       return;
     }
@@ -58,23 +106,51 @@ export function ShareButton({ url, name, price }: Props) {
         </span>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-ink">Partager ce produit</p>
-          <p className="text-xs text-slate-400">Faites-en profiter vos proches 💬</p>
+          <p className="text-xs text-slate-400">Un flyer prêt à poster, avec le prix 🔥</p>
         </div>
       </div>
+
+      {/* Action principale : le flyer brandé partagé en image */}
+      <button
+        type="button"
+        onClick={shareFlyer}
+        disabled={busy}
+        className="mb-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-brand-700 hover:shadow active:translate-y-0 disabled:cursor-wait disabled:opacity-70"
+        aria-label="Partager le flyer du produit"
+      >
+        {busy ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" opacity="0.25" />
+              <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+            Génération du flyer…
+          </>
+        ) : (
+          <>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2" strokeLinejoin="round" />
+              <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" stroke="none" />
+              <path d="M21 15l-5-5L5 21" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Partager le flyer
+          </>
+        )}
+      </button>
 
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={nativeShare}
+          onClick={shareLink}
           className="inline-flex flex-1 min-w-[7rem] items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-sm ring-1 ring-slate-200 transition-all hover:-translate-y-0.5 hover:shadow active:translate-y-0"
-          aria-label="Partager ce produit"
+          aria-label="Partager le lien du produit"
         >
           {copied ? (
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           ) : shareIcon}
-          {copied ? "Lien copié ✓" : "Partager"}
+          {copied ? "Lien copié ✓" : "Le lien"}
         </button>
 
         <a
@@ -103,6 +179,8 @@ export function ShareButton({ url, name, price }: Props) {
           WhatsApp
         </a>
       </div>
+
+      {note && <p className="mt-2 text-xs font-medium text-brand-700">{note}</p>}
     </div>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import type { ProductImage } from "@/lib/types";
+import { SafeImage } from "./SafeImage";
 
 export function ProductGallery({
   images,
@@ -24,7 +24,7 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-3">
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-slate-50">
-        <Image
+        <SafeImage
           src={images[active].image}
           alt={images[active].alt || name}
           fill
@@ -43,7 +43,7 @@ export function ProductGallery({
                 i === active ? "border-brand-600" : "border-transparent"
               }`}
             >
-              <Image
+              <SafeImage
                 src={img.image}
                 alt={img.alt || name}
                 fill
