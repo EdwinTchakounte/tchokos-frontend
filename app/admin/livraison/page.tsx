@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/format";
-import { IconDelivery, IconUsers, IconMapPin, IconWallet } from "@/components/admin/icons";
+import { IconDelivery, IconUsers, IconMapPin, IconWallet, IconWarning, IconX, IconCheck } from "@/components/admin/icons";
 import {
   getDeliveries,
   getCouriers,
@@ -125,7 +125,7 @@ function LivreursTab() {
                 </div>
               </div>
               {c.zones.length > 0 && <p className="mt-2 text-xs text-slate-500">Zones : {c.zones.join(", ")}</p>}
-              {c.latitude != null && c.longitude != null && <p className="text-[11px] text-slate-400">📍 {c.latitude.toFixed(4)}, {c.longitude.toFixed(4)}</p>}
+              {c.latitude != null && c.longitude != null && <p className="flex items-center gap-1 text-[11px] text-slate-400"><IconMapPin className="h-3 w-3 shrink-0" /> {c.latitude.toFixed(4)}, {c.longitude.toFixed(4)}</p>}
               <div className="mt-3 flex gap-2">
                 <button onClick={() => setEditing(c)} className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Éditer</button>
                 <button onClick={() => remove(c)} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:bg-red-50">Supprimer</button>
@@ -178,7 +178,7 @@ function CourierEditor({ courier, zones, onClose, onSaved }: { courier: AdminCou
       <div className="h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-bold text-ink">{courier ? "Éditer le livreur" : "Nouveau livreur"}</h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100">✕</button>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100"><IconX className="h-4 w-4" /></button>
         </div>
         <div className="mt-4 space-y-2.5 text-sm">
           <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Nom *" className="w-full rounded-lg border border-slate-200 px-3 py-2.5 focus:border-brand-500 focus:outline-none" />
@@ -299,8 +299,8 @@ function CoursesTab() {
                 <p className="text-xs text-slate-400">{d.phone}</p>
               </div>
               <span className="text-xs text-slate-500">{d.zone?.name ?? "—"}</span>
-              <span className={`justify-self-start rounded-full px-2 py-0.5 text-[11px] font-semibold ${DELIVERY_STATUS_STYLES[d.status] ?? "bg-slate-100"}`}>
-                {d.status_display}{d.is_overdue ? " ⚠️" : ""}
+              <span className={`inline-flex items-center gap-1 justify-self-start rounded-full px-2 py-0.5 text-[11px] font-semibold ${DELIVERY_STATUS_STYLES[d.status] ?? "bg-slate-100"}`}>
+                {d.status_display}{d.is_overdue && <IconWarning className="h-3 w-3 text-red-500" />}
               </span>
               <div>
                 {canAssign ? (
@@ -520,7 +520,7 @@ function SettlementsTab() {
                 </button>
               ) : (
                 <span className="text-xs text-slate-400">
-                  {s.settled_at ? new Date(s.settled_at).toLocaleDateString("fr-FR") : "✓"}
+                  {s.settled_at ? new Date(s.settled_at).toLocaleDateString("fr-FR") : <IconCheck className="inline h-3.5 w-3.5 text-cmr-green" />}
                 </span>
               )}
             </div>

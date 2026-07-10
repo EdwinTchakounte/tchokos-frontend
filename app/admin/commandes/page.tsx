@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pager } from "@/components/admin/Pager";
+import { IconNote, IconWhatsApp, IconMail, IconX, IconCheck } from "@/components/admin/icons";
 import { formatPrice } from "@/lib/format";
 import {
   getOrders,
@@ -230,7 +231,7 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
           <h2 className="font-display text-lg font-bold text-ink">
             {order ? order.reference : "…"}
           </h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100">✕</button>
+          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100"><IconX className="h-4 w-4" /></button>
         </div>
 
         {!order ? (
@@ -243,7 +244,7 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
               {(order.city || order.address) && (
                 <p className="text-slate-500">{[order.city, order.address].filter(Boolean).join(" · ")}</p>
               )}
-              {order.note && <p className="mt-1 rounded-lg bg-slate-50 p-2 text-xs text-slate-500">📝 {order.note}</p>}
+              {order.note && <p className="mt-1 flex items-start gap-1.5 rounded-lg bg-slate-50 p-2 text-xs text-slate-500"><IconNote className="mt-0.5 h-3.5 w-3.5 shrink-0" /> {order.note}</p>}
             </section>
 
             <section>
@@ -298,7 +299,7 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
                     <div className="flex justify-between"><span className="text-slate-500">Zone</span><span className="font-medium text-ink">{order.delivery.zone}</span></div>
                   )}
                   <div className="flex justify-between"><span className="text-slate-500">Livreur</span><span className="font-medium text-ink">{order.delivery.courier || "Non assigné"}</span></div>
-                  {order.delivery.code_sent && <p className="text-[11px] text-cmr-green">✓ Code de livraison envoyé au client</p>}
+                  {order.delivery.code_sent && <p className="flex items-center gap-1 text-[11px] text-cmr-green"><IconCheck className="h-3.5 w-3.5 shrink-0" /> Code de livraison envoyé au client</p>}
                 </div>
               </section>
             )}
@@ -334,7 +335,7 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
                   rel="noreferrer"
                   className="mb-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cmr-green px-3 py-2 text-sm font-semibold text-white hover:bg-cmr-green-dark"
                 >
-                  💬 Écrire sur WhatsApp
+                  <IconWhatsApp className="h-4 w-4" /> Écrire sur WhatsApp
                 </a>
               )}
               {order.email ? (
@@ -349,9 +350,9 @@ function OrderDrawer({ id, onClose, onSaved }: { id: number; onClose: () => void
                   <button
                     onClick={sendContact}
                     disabled={busy || !msg.trim()}
-                    className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-40"
                   >
-                    ✉️ Envoyer l’email
+                    <IconMail className="h-4 w-4" /> Envoyer l’email
                   </button>
                 </>
               ) : (
