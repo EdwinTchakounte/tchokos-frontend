@@ -1,7 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -12,12 +10,13 @@ import {
 } from "@/lib/vendor";
 import { useAuth } from "@/lib/auth-context";
 import { ProductDrawer } from "@/components/vendor/ProductDrawer";
+import { SafeImage } from "@/components/SafeImage";
 
 type StatusFilter = "all" | "online" | "hidden" | "low" | "out";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { ready, isAdmin, user, logout } = useAuth();
+  const { ready, isAdmin } = useAuth();
   const [data, setData] = useState<VendorDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -46,11 +45,6 @@ export default function AdminDashboardPage() {
     }
     load();
   }, [ready, isAdmin, router, load]);
-
-  async function handleLogout() {
-    await logout();
-    router.replace("/connexion");
-  }
 
   function openCreate() {
     setEditing(null);
@@ -83,51 +77,8 @@ export default function AdminDashboardPage() {
   const { stats } = data;
 
   return (
-    <div className="bg-slate-50/60">
-      <div className="mx-auto flex max-w-[110rem] flex-col lg:flex-row">
-        {/* Sidebar / topbar */}
-        <aside className="border-b border-slate-200 bg-white lg:sticky lg:top-16 lg:h-[calc(100dvh-4rem)] lg:w-64 lg:shrink-0 lg:border-b-0 lg:border-r">
-          <div className="flex items-center justify-between p-4 lg:flex-col lg:items-stretch lg:gap-6">
-            <div className="flex items-center gap-3">
-              <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand-600 font-display text-lg font-extrabold text-white">
-                A
-              </span>
-              <div className="min-w-0">
-                <p className="truncate font-display text-sm font-bold text-ink">Administration</p>
-                <p className="truncate text-xs text-slate-400">{user?.email}</p>
-              </div>
-            </div>
-
-            <nav className="hidden flex-1 flex-col gap-1 lg:flex">
-              <SideLink active label="Produits" icon="📦" />
-              <Link href="/admin/commandes" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">
-                <span>🧾</span> Commandes
-              </Link>
-              <Link href="/admin/paiements" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">
-                <span>💳</span> Paiements
-              </Link>
-              <Link href="/admin/livraison" className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100">
-                <span>🛵</span> Livraison
-              </Link>
-              <button onClick={openCreate}
-                className="mt-1 flex items-center gap-2 rounded-xl bg-brand-600 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-700">
-                <span className="text-base leading-none">＋</span> Nouveau produit
-              </button>
-              <a href="/boutique" className="mt-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100">
-                <span>🛍️</span> Voir la boutique
-              </a>
-            </nav>
-
-            <button onClick={handleLogout}
-              className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 lg:mt-auto">
-              Déconnexion
-            </button>
-          </div>
-        </aside>
-
-        {/* Contenu */}
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+    <>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Catalogue produits</h1>
               <p className="text-sm text-slate-500">Gérez le catalogue depuis votre téléphone ou votre ordinateur.</p>
@@ -184,20 +135,10 @@ export default function AdminDashboardPage() {
               </p>
             )}
           </div>
-        </main>
-      </div>
 
       <ProductDrawer open={drawerOpen} product={editing} categories={data.categories}
         onClose={() => setDrawerOpen(false)} onSaved={load} />
-    </div>
-  );
-}
-
-function SideLink({ label, icon, active }: { label: string; icon: string; active?: boolean }) {
-  return (
-    <span className={`flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold ${active ? "bg-slate-100 text-ink" : "text-slate-600"}`}>
-      <span>{icon}</span> {label}
-    </span>
+    </>
   );
 }
 
@@ -251,7 +192,7 @@ function ProductRow({ product, onSaved, onEdit }: { product: VendorProduct; onSa
     <div className="grid grid-cols-2 items-center gap-2 border-t border-slate-100 px-4 py-3 first:border-t-0 md:grid-cols-[1fr_130px_110px_120px_110px]">
       <div className="col-span-2 flex items-center gap-3 md:col-span-1">
         <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-100">
-          {product.image && <Image src={product.image} alt={product.name} fill sizes="56px" className="object-cover" />}
+          <SafeImage src={product.image} alt={product.name} fill sizes="56px" className="object-cover" />
         </span>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-ink">{product.name}</p>

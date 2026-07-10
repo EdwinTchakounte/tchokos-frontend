@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AdminShell } from "@/components/admin/AdminShell";
 import { formatPrice } from "@/lib/format";
 import { getOverview, type Overview } from "@/lib/admin-overview";
 
@@ -155,7 +154,7 @@ export default function AdminOverviewPage() {
   const maxStatus = data ? Math.max(1, ...Object.values(data.orders_by_status)) : 1;
 
   return (
-    <AdminShell>
+    <>
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
           <div>
@@ -241,6 +240,6 @@ export default function AdminOverviewPage() {
           </div>
         )}
       </div>
-    </AdminShell>
+    </>
   );
 }

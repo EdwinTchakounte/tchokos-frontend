@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AdminShell } from "@/components/admin/AdminShell";
 import { Pager } from "@/components/admin/Pager";
 import { formatPrice } from "@/lib/format";
 import {
@@ -79,7 +78,7 @@ export default function AdminOrdersPage() {
   }, [load]);
 
   return (
-    <AdminShell>
+    <>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Commandes & ventes</h1>
         <p className="text-sm text-slate-500">Suivez les commandes, les paiements et le chiffre d’affaires encaissé.</p>
@@ -162,7 +161,7 @@ export default function AdminOrdersPage() {
       {openId != null && (
         <OrderDrawer id={openId} onClose={() => setOpenId(null)} onSaved={load} />
       )}
-    </AdminShell>
+    </>
   );
 }
 

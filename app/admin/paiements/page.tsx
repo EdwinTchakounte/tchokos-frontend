@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AdminShell } from "@/components/admin/AdminShell";
 import { Pager } from "@/components/admin/Pager";
 import { formatPrice } from "@/lib/format";
 import {
@@ -55,7 +54,7 @@ export default function AdminPaymentsPage() {
   }, [load]);
 
   return (
-    <AdminShell>
+    <>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Paiements</h1>
         <p className="text-sm text-slate-500">Toutes les transactions Mobile Money (Tara), avec leur statut réel.</p>
@@ -126,7 +125,7 @@ export default function AdminPaymentsPage() {
         onPrev={() => setOffset((o) => Math.max(o - PAGE_SIZE, 0))}
         onNext={() => setOffset((o) => o + PAGE_SIZE)}
       />
-    </AdminShell>
+    </>
   );
 }
 

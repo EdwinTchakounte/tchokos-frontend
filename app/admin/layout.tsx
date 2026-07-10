@@ -4,21 +4,33 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
+import {
+  IconOverview,
+  IconProducts,
+  IconOrders,
+  IconPayments,
+  IconDelivery,
+  IconShop,
+  IconLogout,
+} from "@/components/admin/icons";
 
 const NAV = [
-  { href: "/admin/apercu", label: "Vue d'ensemble", icon: "📊" },
-  { href: "/admin", label: "Produits", icon: "📦" },
-  { href: "/admin/commandes", label: "Commandes", icon: "🧾" },
-  { href: "/admin/paiements", label: "Paiements", icon: "💳" },
-  { href: "/admin/livraison", label: "Livraison", icon: "🛵" },
+  { href: "/admin/apercu", label: "Vue d'ensemble", Icon: IconOverview },
+  { href: "/admin", label: "Produits", Icon: IconProducts },
+  { href: "/admin/commandes", label: "Commandes", Icon: IconOrders },
+  { href: "/admin/paiements", label: "Paiements", Icon: IconPayments },
+  { href: "/admin/livraison", label: "Livraison", Icon: IconDelivery },
 ];
 
 /**
- * Coquille commune de l'espace admin : garde d'authentification (redirige les
- * non-admins vers la connexion), barre latérale de navigation et déconnexion.
- * Les pages passent leur contenu en `children`.
+ * Coquille PERSISTANTE de l'espace admin (App Router layout de segment).
+ *
+ * Rendue une seule fois : au passage d'une page admin à l'autre, seul le
+ * contenu de `<main>` ({children}) est remplacé — la sidebar ne se démonte pas
+ * (dashboard « single page », rechargement du centre uniquement). Contient la
+ * garde d'authentification (redirige les non-admins) et la déconnexion.
  */
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { ready, isAdmin, user, logout } = useAuth();
@@ -54,36 +66,39 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </div>
 
             <nav className="flex flex-1 gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-              {NAV.map((item) => {
+              {NAV.map(({ href, label, Icon }) => {
                 const active =
-                  item.href === "/admin"
-                    ? pathname === "/admin"
-                    : pathname.startsWith(item.href);
+                  href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
-                      active ? "bg-slate-100 text-ink" : "text-slate-600 hover:bg-slate-50"
+                    key={href}
+                    href={href}
+                    className={`flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                      active
+                        ? "bg-brand-50 text-brand-700"
+                        : "text-slate-600 hover:bg-slate-50"
                     }`}
                   >
-                    <span>{item.icon}</span> {item.label}
+                    <Icon className={active ? "text-brand-600" : "text-slate-400"} />
+                    {label}
                   </Link>
                 );
               })}
-              <a
+              <Link
                 href="/boutique"
-                className="flex shrink-0 items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                className="flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
               >
-                <span>🛍️</span> Voir la boutique
-              </a>
+                <IconShop className="text-slate-400" />
+                Voir la boutique
+              </Link>
             </nav>
 
             <button
               onClick={handleLogout}
-              className="shrink-0 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 lg:mt-auto"
+              className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50 lg:mt-auto"
             >
-              Déconnexion
+              <IconLogout className="text-slate-400" />
+              <span className="hidden sm:inline">Déconnexion</span>
             </button>
           </div>
         </aside>

@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AdminShell } from "@/components/admin/AdminShell";
 import { formatPrice } from "@/lib/format";
+import { IconDelivery, IconUsers, IconMapPin, IconWallet } from "@/components/admin/icons";
 import {
   getDeliveries,
   getCouriers,
@@ -38,24 +38,32 @@ const DELIVERY_STATUS_STYLES: Record<string, string> = {
 export default function AdminDeliveryPage() {
   const [tab, setTab] = useState<Tab>("courses");
   return (
-    <AdminShell>
+    <>
       <div className="mb-6">
         <h1 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">Livraison</h1>
         <p className="text-sm text-slate-500">Courses, tarifs par zone et décaissements des livreurs.</p>
       </div>
 
       <div className="mb-5 flex gap-1 rounded-xl bg-slate-100 p-1 text-sm font-semibold">
-        <TabBtn active={tab === "courses"} onClick={() => setTab("courses")}>🛵 Courses</TabBtn>
-        <TabBtn active={tab === "livreurs"} onClick={() => setTab("livreurs")}>🧍 Livreurs</TabBtn>
-        <TabBtn active={tab === "zones"} onClick={() => setTab("zones")}>📍 Zones & tarifs</TabBtn>
-        <TabBtn active={tab === "decaissements"} onClick={() => setTab("decaissements")}>💰 Décaissements</TabBtn>
+        <TabBtn active={tab === "courses"} onClick={() => setTab("courses")}>
+          <IconDelivery className="h-4 w-4" /> Courses
+        </TabBtn>
+        <TabBtn active={tab === "livreurs"} onClick={() => setTab("livreurs")}>
+          <IconUsers className="h-4 w-4" /> Livreurs
+        </TabBtn>
+        <TabBtn active={tab === "zones"} onClick={() => setTab("zones")}>
+          <IconMapPin className="h-4 w-4" /> Zones &amp; tarifs
+        </TabBtn>
+        <TabBtn active={tab === "decaissements"} onClick={() => setTab("decaissements")}>
+          <IconWallet className="h-4 w-4" /> Décaissements
+        </TabBtn>
       </div>
 
       {tab === "courses" && <CoursesTab />}
       {tab === "livreurs" && <LivreursTab />}
       {tab === "zones" && <ZonesTab />}
       {tab === "decaissements" && <SettlementsTab />}
-    </AdminShell>
+    </>
   );
 }
 
@@ -212,7 +220,7 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className={`flex-1 rounded-lg px-3 py-2 transition ${active ? "bg-white text-ink shadow-sm" : "text-slate-500 hover:text-ink"}`}
+      className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 transition ${active ? "bg-white text-ink shadow-sm" : "text-slate-500 hover:text-ink"}`}
     >
       {children}
     </button>
